@@ -1,0 +1,28 @@
+{
+  "name": "sern-stack-starter",
+  "version": "1.0.0",
+  "author": "Dalton Wais",
+  "scripts": {
+    "client": "cd client && yarn start",
+    "server": "node server.js",
+    "start": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
+    "reinstall": "rm -rf node_modules && npm install",
+    "debug": "node inspect server.js",
+    "kill": "lsof -P | grep ':5001' | awk '{print $2}' | xargs kill -9"
+  },
+  "dependencies": {
+    "@material-ui/core": "^3.9.2",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mysql": "^2.16.0",
+    "mysql-migrations": "^1.0.6",
+    "nodemailer": "^5.1.1",
+    "react": "^16.8.4",
+    "react-crud-table": "0.0.8",
+    "react-dom": "^16.8.4",
+    "react-scripts": "2.0.5"
+  },
+  "devDependencies": {
+    "concurrently": "^4.0.1"
+  }
+}
