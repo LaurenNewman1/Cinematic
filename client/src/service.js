@@ -1,8 +1,7 @@
 const makeGetRequest = async(url) => {
-    const response = await fetch(url);
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body);
-    return body;
+    return await fetch(url)
+      .then(response => response.json())
+      .then(data => JSON.stringify(data));
 };
 
 const makePostRequest = async (url, payload) => {
@@ -11,7 +10,7 @@ const makePostRequest = async (url, payload) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({payload}),
       };
       const response = await fetch(url, options);
       return await response.text();
@@ -23,7 +22,7 @@ const makePutRequest = async (url, payload) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({payload}),
   };
   const response = await fetch(url, options);
   return await response.text();
@@ -35,43 +34,10 @@ const makeDeleteRequest = async (url) => {
   return await response.text();
 };
 
-const heartbeat = async () => {
-    return await makeGetRequest('/api/ekg');
-};
-
-const createUser = async (username) => {
-    return await makePostRequest('/api/users', { username: username });
-};
-
-const getEntities = async () => {
+const retrieveData = async () => {
   return await makeGetRequest('/api/entities');
-}
-
-const getEntity = async (id) => {
-  let url = `/api/entity/${id}`;
-  return await makeGetRequest(url);
-}
-
-const createEntity = async (payload) => {
-  return await makePostRequest('/api/entities', payload);
-};
-
-const updateEntity = async (id, payload) => {
-  let url = `/api/entities/${id}`;
-  return await makePutRequest(url, payload);
-};
-
-const deleteEntity = async (id) => {
-  let url = `/api/entities/${id}`;
-  return await makeDeleteRequest(url);
 };
 
 export default {
-    heartbeat: heartbeat,
-    createUser: createUser,
-    getEntity: getEntity,
-    getEntities: getEntities,
-    createEntity: createEntity,
-    updateEntity: updateEntity,
-    deleteEntity: deleteEntity
+    retrieveData: retrieveData
 };

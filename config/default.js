@@ -2,11 +2,12 @@ module.exports = {
     application: {
         "port": 5001
     },
-    mysql: {
-        connectionLimit : 10,
-        host:  "localhost",
-        user:  "root",
-        password:  "password",
-        database:  "database_whatever"
+    orcl: {
+        user:  "lauren.newman", // CHANGE THIS
+        password:  "xiNGq7lhXcX8pct9nvOFVz89", // CHANGE THIS
+        connectString:  "oracle.cise.ufl.edu:1521/orcl"
+    },
+    instantclient: {
+        path: "C:\\oracle\\instantclient_21_3" // CHANGE THIS
     }
 };

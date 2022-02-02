@@ -5,42 +5,30 @@ import service from './service';
 
 class App extends Component {
   state = {
-    response: '',
-    responseToPost: '',
-  };
-  
-  componentDidMount() {
-    service.heartbeat()
-      .then(res => this.setState({ response: res.body }))
-      .catch(err => console.log(err));
+    response: ''
   };
 
   handleSubmit = async e => {
     e.preventDefault();
-    const body = await service.createUser(this.state.username);
-    this.setState({ responseToPost: body });
+    const body = await service.retrieveData()
+      .then(data => this.setState({ response: data }));
   };
   
-render() {
+  render() {
     return (
       <div className="App">
         <header className="App-header">
           <p>
-            <code>{this.state.response.name} {this.state.response.version}</code>
+            <code>CINEMATIC</code>
           </p>
         </header>
         <form onSubmit={this.handleSubmit}>
           <p>
-            <strong>Identify Yourself!</strong>
+            <strong>Click to retrieve the test data!</strong>
           </p>
-          <input
-            type="text"
-            value={this.state.username}
-            onChange={e => this.setState({ username: e.target.value })}
-          />
-          <button type="submit">Submit</button>
+          <button type="submit">Click Here</button>
         </form>
-        <p>{this.state.responseToPost}</p>
+        <p>{this.state.response}</p>
       </div>
       
     );

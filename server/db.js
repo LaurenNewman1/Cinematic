@@ -1,17 +1,20 @@
-const mysql = require('mysql');
+const oracledb = require('oracledb');
+const oracleConfig = require('../config/default').orcl;
+const instantclient = require('../config/default').instantclient;
 
-let ConnectToMysql = async () => {
-    const mysqlConfig = require('../config/default').mysql;
-    return new Promise((resolve, reject) => {
-        let conn = mysql.createConnection(mysqlConfig);
-        conn.connect(err => {
-            err ? reject(err) : resolve(conn);
-        })
-    });
+let ConnectToOracle = async () => {
+    try {
+        oracledb.initOracleClient({libDir: instantclient.path});
+        connection = await oracledb.getConnection(oracleConfig);
+        console.log('Successfully connected to database');
+        return connection;
+    } catch (err) {
+        console.error(err.message);
+    }
 };
 
 
 
 module.exports = {
-    ConnectToMysql: ConnectToMysql
+    ConnectToOracle: ConnectToOracle
 }

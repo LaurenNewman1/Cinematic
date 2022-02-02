@@ -1,29 +1,32 @@
-# SERN-Stack-Starter
+# Cinematic
 
-quick template application to get a SERN stack application spun up quickly with basic dependancies and migrations
+Web application for movie recommendations and analysis
 
-mySql - Express - React - NodeJS
+OracleDB - Express - React - Node.js
 
 ## Setup Instructions
 
-* make sure you have mysql installed and running - project migrations 
+* make sure you have access to the Oracle database
 * navigate to project root
 
 * install yarn
-> yarn
+> npm install yarn
+
+* install Oracle Instant Client
+> https://www.oracle.com/database/technologies/instant-client/downloads.html
+
+* update the path to your Oracle Instant Client in config/default.js to the location on your device
 
 * install node_modules
 > npm run reinstall 
 
-* update myql configuration
-> open up config/default.js and update to your mysql configuration
+* update Oracle configuration
+> open up config/default.js and update to your Oracle configuration
 
-* create the project database
-> login to mysql shell with **mysql -u USERNAME -p**
-> run query 'CREATE DATABASE database_for_project;'
+* connect to your UF Vpn on Cisco Anyconnect
 
-* run migrations
-> node migrations.js up
+* test the connection to the database
+> npm run testconnection
 
 * start application
 > npm run start
