@@ -24,6 +24,8 @@ OracleDB - Express - React - Node.js
 > open up config/default.js and update to your Oracle configuration
 
 * connect to your UF Vpn on Cisco Anyconnect
+* right click your connection in sql developer
+* copy your Oracle password under the password field and check the save password box
 
 * test the connection to the database
 > npm run testconnection
