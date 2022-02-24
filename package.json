@@ -13,14 +13,18 @@
     "testconnection": "node server/testconnection.js"
   },
   "dependencies": {
-    "@material-ui/core": "^3.9.2",
+    "@emotion/react": "^11.8.1",
+    "@emotion/styled": "^11.8.1",
+    "@mui/icons-material": "^5.4.2",
+    "@mui/material": "^5.4.3",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "nodemailer": "^5.1.1",
     "oracledb": "^5.3.0",
-    "react": "^16.8.4",
+    "react": "^17.0.2",
     "react-crud-table": "0.0.8",
-    "react-dom": "^16.8.4",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "^6.2.1",
     "react-scripts": "2.0.5",
     "yarn": "^1.22.17"
   },
