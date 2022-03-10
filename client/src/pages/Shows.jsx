@@ -1,9 +1,24 @@
 import React, { useState } from 'react';
 import { Grid, Typography, TextField, Box, Card, CardHeader, 
-    Button, CardContent, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+    Button, CardContent, MenuItem, Select, FormControl, InputLabel, TableBody, TableContainer } from '@mui/material';
 import { DateRangePicker } from '@mui/lab';
 import { subDays } from 'date-fns';
+import Table from '@mui/material/Table';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 // import from 'ShowService.js'
+
+function createData(year, movie_title, minutes) {
+    return { year, movie_title, minutes};
+  }
+  
+  const rows = [
+    createData( 2000, 'The Hunger Games', 200),
+    createData( 2001, 'The Hunger Games', 200),
+    createData( 2002, 'The Hunger Games', 200),
+    createData( 2003, 'The Hunger Games', 200),
+    createData( 2004, 'The Hunger Games', 200),
+  ];
 
 const Shows = () => {
 
@@ -36,15 +51,15 @@ const Shows = () => {
                         <Card>
                             <CardHeader
                                 title="placeholder"
-                                subheader="placeholder"
+                                subheader="Total TV Shows"
                             />
                         </Card>
                     </Grid>
                     <Grid item xs={12}>
                         <Card>
                             <CardHeader
-                                title="placeholder"
-                                subheader="placeholder"
+                                title="IMDb"
+                                subheader="Primary data source"
                             />
                         </Card>
                     </Grid>
@@ -148,12 +163,30 @@ const Shows = () => {
             <Grid item xs={3}>
                 <Card sx={{ height: '100%' }}>
                     <CardHeader
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
+                        title="Longest Running Shows"
+                        subheader="The longest shows of each year"
                     />
                     <CardContent>
                         <Typography variant="body2" color="text.secondary">
-                            Insert charts here
+                        <TableContainer >
+                               <Table>
+                                   <TableBody>
+                                    {rows.map((row) => (
+                                            <TableRow
+                                            key={row.year}
+                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                            <TableCell component="th" scope="row">
+                                                {row.name}
+                                            </TableCell>
+                                            <TableCell align="right">{row.year}</TableCell>
+                                            <TableCell align="right">{row.movie_title}</TableCell>
+                                            <TableCell align="right">{row.minutes}</TableCell>
+                                            </TableRow>
+                                        ))}
+                               </TableBody>
+                               </Table>
+                           </TableContainer>
                         </Typography>
                     </CardContent>
                 </Card>
@@ -161,12 +194,30 @@ const Shows = () => {
             <Grid item xs={3}>
                 <Card sx={{ height: '100%' }}>
                     <CardHeader
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
+                        title="Shortest Running Shows"
+                        subheader="The shortest shows of each year"
                     />
                     <CardContent>
                         <Typography variant="body2" color="text.secondary">
-                            Insert charts here
+                        <TableContainer >
+                               <Table>
+                                   <TableBody>
+                                    {rows.map((row) => (
+                                            <TableRow
+                                            key={row.year}
+                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                            >
+                                            <TableCell component="th" scope="row">
+                                                {row.name}
+                                            </TableCell>
+                                            <TableCell align="right">{row.year}</TableCell>
+                                            <TableCell align="right">{row.movie_title}</TableCell>
+                                            <TableCell align="right">{row.minutes}</TableCell>
+                                            </TableRow>
+                                        ))}
+                               </TableBody>
+                               </Table>
+                           </TableContainer>
                         </Typography>
                     </CardContent>
                 </Card>
