@@ -1,12 +1,8 @@
 // Insert post, put, get, delete services here for movies
-const app = express();
+import {makeGetRequest} from "../services/service.js"
 
-app.use(cors());
-
-app.get('/total_movies', (req,res) => {
-    res.send('total movies')
-})
-
-app.listen(3000, () => {
-    console.log('running on post 3000')
-})
+export const retrieveTotalMovies = async () => {
+    const result = await makeGetRequest('/api/total_movies');
+    console.log(result);
+    return result;
+};

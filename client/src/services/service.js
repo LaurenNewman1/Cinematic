@@ -1,10 +1,10 @@
-const makeGetRequest = async(url) => {
+export const makeGetRequest = async(url) => {
     return await fetch(url)
       .then(response => response.json())
       .then(data => JSON.stringify(data));
 };
 
-const makePostRequest = async (url, payload) => {
+export const makePostRequest = async (url, payload) => {
     let options = {
         method: 'POST',
         headers: {
@@ -16,7 +16,7 @@ const makePostRequest = async (url, payload) => {
       return await response.text();
 };
 
-const makePutRequest = async (url, payload) => {
+export const makePutRequest = async (url, payload) => {
   let options = {
     method: 'PUT',
     headers: {
@@ -28,16 +28,20 @@ const makePutRequest = async (url, payload) => {
   return await response.text();
 };
 
-const makeDeleteRequest = async (url) => {
+export const makeDeleteRequest = async (url) => {
   let options = { method: 'DELETE'};
   const response = await fetch(url, options);
   return await response.text();
 };
 
-const retrieveData = async () => {
+export const retrieveData = async () => {
   return await makeGetRequest('/api/entities');
 };
 
 export default {
-    retrieveData: retrieveData
+    retrieveData: retrieveData,
+    makeDeleteRequest: makeDeleteRequest,
+    makePostRequest: makePostRequest,
+    makePutRequest: makePutRequest,
+    makeGetRequest: makeGetRequest
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid, Typography, TextField, Box, Card, CardHeader, 
     Button, CardContent, MenuItem, Select, FormControl, InputLabel, Icon, CardMedia, CardActionArea, TableContainer, TableBody } from '@mui/material';
 import { DateRangePicker } from '@mui/lab';
@@ -7,6 +7,7 @@ import LocalMoviesOutlinedIcon from '@mui/icons-material/LocalMoviesOutlined';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
+import {retrieveTotalMovies} from "../services/MovieService.js";
 
 
 // import from 'MovieService.js'
@@ -26,6 +27,16 @@ function createData(year, movie_title, minutes) {
 const Movies = () => {
 
     const [dateRange, setDateRange] = useState([subDays(new Date(), 7), new Date()]);
+    const [totalMovies , setTotalMovies] = React.useState();
+
+    useEffect(
+        async () => {
+            console.log("test");
+            const result = await retrieveTotalMovies();
+            setTotalMovies(result);
+        },
+        []
+      );
 
     return (
         <Grid container spacing={2} padding={2} sx={{ width: '100%' }} alignItems='stretch'>
@@ -53,7 +64,7 @@ const Movies = () => {
                     <Grid item xs={12}>
                         <Card>
                             <CardHeader
-                                title="placehol"
+                                title={retrieveTotalMovies}
                                 subheader="Total movies"
                             />
                         </Card>

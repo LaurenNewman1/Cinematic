@@ -26,5 +26,18 @@ module.exports = (app, db) => {
             res.status(400).type('json').send(err);
         }
     });
+
+    app.get('/api/total_movies', async(req, res) => {
+        try {
+        const data = await db.execute(
+            `SELECT COUNT(tconst) 
+            FROM "LAUREN.NEWMAN".title
+            WHERE titletype = 'movie' GROUP BY titletype`,
+        );
+        res.status(200).type('json').send(data);
+        } catch (err) {
+            res.status(400).type('json').send(err);
+        }
+    });
 };
 
