@@ -33,7 +33,7 @@ const Movies = () => {
         async () => {
             console.log("test");
             const result = await retrieveTotalMovies();
-            setTotalMovies(result);
+            setTotalMovies(result.match('[0-9]+'));
         },
         []
       );
@@ -64,7 +64,7 @@ const Movies = () => {
                     <Grid item xs={12}>
                         <Card>
                             <CardHeader
-                                title={retrieveTotalMovies}
+                                title={totalMovies}
                                 subheader="Total movies"
                             />
                         </Card>
