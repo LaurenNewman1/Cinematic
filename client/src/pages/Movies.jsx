@@ -10,6 +10,7 @@ import TableRow from '@mui/material/TableRow';
 import {retrieveTotalMovies} from "../services/MovieService.js";
 
 
+
 // import from 'MovieService.js'
 
 function createData(year, movie_title, minutes) {
@@ -62,7 +63,8 @@ const Movies = () => {
             <Grid item xs={4}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <Card>
+                        <Card
+                        style={{backgroundColor: '#9f66e9'}}>
                             <CardHeader
                                 title={totalMovies}
                                 subheader="Total movies"
@@ -70,7 +72,8 @@ const Movies = () => {
                         </Card>
                     </Grid>
                     <Grid item xs={12}>
-                        <Card className='data_source'>
+                        <Card className='data_source'
+                        style={{backgroundColor: '#f4738a'}}>
                             <CardHeader
                                 title="IMDb"
                                 subheader="Primary data source" 
