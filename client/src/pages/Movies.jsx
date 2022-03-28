@@ -7,7 +7,7 @@ import LocalMoviesOutlinedIcon from '@mui/icons-material/LocalMoviesOutlined';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import {retrieveTotalMovies} from "../services/MovieService.js";
+import {retrieveLongestMovies, retrieveTotalMovies} from "../services/MovieService.js";
 
 
 
@@ -29,15 +29,24 @@ const Movies = () => {
 
     const [dateRange, setDateRange] = useState([subDays(new Date(), 7), new Date()]);
     const [totalMovies , setTotalMovies] = React.useState();
+    const [longestMovies, setLongestMovies] = React.useState();
 
     useEffect(
         async () => {
-            console.log("test");
             const result = await retrieveTotalMovies();
             setTotalMovies(result.match('[0-9]+'));
         },
         []
       );
+
+      useEffect(
+        async () => {
+            const result = await retrieveLongestMovies();
+            console.log(result)
+        },
+        []
+      );
+
 
     return (
         <Grid container spacing={2} padding={2} sx={{ width: '100%' }} alignItems='stretch'>

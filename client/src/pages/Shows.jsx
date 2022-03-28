@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid, Typography, TextField, Box, Card, CardHeader, 
     Button, CardContent, MenuItem, Select, FormControl, InputLabel, TableBody, TableContainer } from '@mui/material';
 import { DateRangePicker } from '@mui/lab';
@@ -6,6 +6,7 @@ import { subDays } from 'date-fns';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
+import {retrieveTotalShows} from "../services/ShowService.js";
 // import from 'ShowService.js'
 
 function createData(year, movie_title, minutes) {
@@ -23,6 +24,15 @@ function createData(year, movie_title, minutes) {
 const Shows = () => {
 
     const [dateRange, setDateRange] = useState([subDays(new Date(), 7), new Date()]);
+    const [totalShows , setTotalShows] = React.useState();
+
+    useEffect(
+        async () => {
+            const result = await retrieveTotalShows();
+            setTotalShows(result.match('[0-9]+'));
+        },
+        []
+      );
 
     return (
         <Grid container spacing={2} padding={2} sx={{ width: '100%' }} alignItems='stretch'>
@@ -50,7 +60,7 @@ const Shows = () => {
                     <Grid item xs={12}>
                         <Card>
                             <CardHeader
-                                title="placeholder"
+                                title={totalShows}
                                 subheader="Total TV Shows"
                             />
                         </Card>

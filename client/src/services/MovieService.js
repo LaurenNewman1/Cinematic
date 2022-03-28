@@ -7,3 +7,13 @@ export const retrieveTotalMovies = async () => {
     console.log(result);
     return result;
 };
+export const retrieveLongestMovies = async () => {
+    const result = await makeGetRequest('/api/longest_movies');
+    console.log(result);
+    return result;
+};
+export const retrieveShortestMovies = async () => {
+    const result = await makeGetRequest('/api/shortest_movies');
+    console.log(result);
+    return result;
+};
