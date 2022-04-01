@@ -134,5 +134,51 @@ module.exports = (app, db) => {
             res.status(400).type('json').send(err);
         }
     });
+
+    app.get('/api/highest_rated_movies/:start/:end', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT StartYear, PrimaryTitle, AverageRating
+                FROM "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Rating
+                WHERE (StartYear, AverageRating) IN (
+                    SELECT StartYear, MAX(AverageRating) AS AverageRating
+                    FROM "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Rating
+                    WHERE Tconst NOT IN (
+                        SELECT ParentTconst AS Tconst
+                        FROM "LAUREN.NEWMAN".Episode
+                    )
+                    AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                    GROUP BY StartYear
+                )
+                ORDER BY StartYear ASC`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            res.status(400).type('json').send(err);
+        }
+    });
+
+    app.get('/api/lowest_rated_movies/:start/:end', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT StartYear, PrimaryTitle, AverageRating
+                FROM "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Rating
+                WHERE (StartYear, AverageRating) IN (
+                    SELECT StartYear, MIN(AverageRating) AS AverageRating
+                    FROM "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Rating
+                    WHERE Tconst NOT IN (
+                        SELECT ParentTconst AS Tconst
+                        FROM "LAUREN.NEWMAN".Episode
+                    )
+                    AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                    GROUP BY StartYear
+                )
+                ORDER BY StartYear ASC`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            res.status(400).type('json').send(err);
+        }
+    });
 };
 

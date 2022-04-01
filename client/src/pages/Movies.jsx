@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, TextField, Box, Card, CardHeader, 
-    Button, CardContent, MenuItem, Select, FormControl, InputLabel, Icon, CardMedia, CardActionArea, TableContainer, TableBody } from '@mui/material';
-import { DateRangePicker } from '@mui/lab';
+import { Grid, Typography,  Card, CardHeader, TextField,
+    CardContent, MenuItem, Select, FormControl, InputLabel, TableContainer, TableBody } from '@mui/material';
+import { DatePicker } from '@mui/lab';
 import { subDays } from 'date-fns';
 import LocalMoviesOutlinedIcon from '@mui/icons-material/LocalMoviesOutlined';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import {retrieveLongestMovies, retrieveTotalMovies} from "../services/MovieService.js";
-
-
-
-// import from 'MovieService.js'
+import {retrieveHighestRatedMovies, retrieveLongestMovies, retrieveLowestRatedMovies, retrieveTotalMovies} from "../services/MovieService.js";
+import Loading from '../components/Loading.jsx';
 
 function createData(year, movie_title, minutes) {
     return { year, movie_title, minutes};
@@ -27,26 +24,47 @@ function createData(year, movie_title, minutes) {
 
 const Movies = () => {
 
-    const [dateRange, setDateRange] = useState([subDays(new Date(), 7), new Date()]);
-    const [totalMovies , setTotalMovies] = React.useState();
-    const [longestMovies, setLongestMovies] = React.useState();
+    const [dateRange, setDateRange] = useState([subDays(new Date(), 365), new Date()]);
+    const [totalMovies , setTotalMovies] = useState();
+    const [longestMovies, setLongestMovies] = useState([]);
+    const [bestMovies, setBestMovies] = useState([]);
+    const [worstMovies, setWorstMovies] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    useEffect(
-        async () => {
-            const result = await retrieveTotalMovies();
-            setTotalMovies(result.match('[0-9]+'));
-        },
-        []
-      );
+    const removeDuplicates = (list) => {
+        let years = [];
+        let unique = [];
+        list.forEach((el) => {
+            if (!years.includes(el[0])) {
+                years.push(el[0]);
+                unique.push(el);
+            }
+        })
+        console.log(unique);
+        return unique;
+    }
 
-      useEffect(
-        async () => {
-            const result = await retrieveLongestMovies();
-            console.log(result)
-        },
-        []
-      );
+    const fetchData = async () => {
+        setLoading(true);
+        const tot = await retrieveTotalMovies();
+        setTotalMovies(tot.match('[0-9]+'));
+        const longest = await retrieveLongestMovies();
+        console.log(longest);
+        const best = await retrieveHighestRatedMovies(dateRange);
+        setBestMovies(removeDuplicates(JSON.parse(best).rows));
+        const worst = await retrieveLowestRatedMovies(dateRange);
+        setWorstMovies(removeDuplicates(JSON.parse(worst).rows));
+        setLoading(false);
+    }
 
+    useEffect(async () => fetchData(), [dateRange]);
+
+    const changeDate = (newDate, fromto) => {
+        if (fromto == "from")
+            setDateRange([newDate, dateRange[1]]);
+        else
+            setDateRange([dateRange[0], newDate]);
+    }
 
     return (
         <Grid container spacing={2} padding={2} sx={{ width: '100%' }} alignItems='stretch'>
@@ -54,21 +72,27 @@ const Movies = () => {
                 <Typography variant='h4'>Movies</Typography>
                 <Typography variant='subtitle1'>Explore the cinematic universe.</Typography>
             </Grid>
-            <Grid item xs={4}>
-                <DateRangePicker
-                    startText="From"
-                    endText="To"
-                    value={dateRange}
-                    onChange={(newValue) => {setDateRange(newValue);}}
-                    renderInput={(startProps, endProps) => (
-                    <React.Fragment>
-                        <TextField {...startProps} />
-                        <Box sx={{ mx: 1 }}></Box>
-                        <TextField {...endProps} />
-                    </React.Fragment>
-                    )}
+            <Grid item xs={4} sx={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
+                <DatePicker
+                    views={['year']}
+                    label="From"
+                    value={dateRange[0]}
+                    onChange={(newValue) => changeDate(newValue, "from")}
+                    renderInput={(params) => <TextField {...params} helperText={null} />}
+                />
+                <DatePicker
+                    views={['year']}
+                    label="To"
+                    value={dateRange[1]}
+                    onChange={(newValue) => changeDate(newValue, "to")}
+                    renderInput={(params) => <TextField {...params} helperText={null} />}
                 />
             </Grid>
+            {loading ?
+            <div sx={{ height: '100%', width: '100%', alignItems: 'center' }}>
+                <Loading />
+            </div> :
+            <>
             <Grid item xs={4}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -164,26 +188,56 @@ const Movies = () => {
             <Grid item xs={3}>
                 <Card sx={{ height: '100%' }}>
                     <CardHeader
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
+                        title="Highest Rated Movies"
+                        subheader="The best movies of each year"
                     />
                     <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
+                        <TableContainer >
+                            <Table>
+                                <TableBody>
+                                    {bestMovies.map((movie) => (
+                                        <TableRow
+                                        key={movie[0]}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {movie[0]}
+                                            </TableCell>
+                                            <TableCell align="right">{movie[1]}</TableCell>
+                                            <TableCell align="right">{Math.round(movie[2], 1)}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </CardContent>
                 </Card>
             </Grid>
             <Grid item xs={3}>
                 <Card sx={{ height: '100%' }}>
                     <CardHeader
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
+                        title="Lowest Rated Movies"
+                        subheader="The worst movies of each year"
                     />
                     <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
+                        <TableContainer >
+                            <Table>
+                                <TableBody>
+                                    {worstMovies.map((movie) => (
+                                        <TableRow
+                                        key={movie[0]}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {movie[0]}
+                                            </TableCell>
+                                            <TableCell align="right">{movie[1]}</TableCell>
+                                            <TableCell align="right">{Math.round(movie[2], 1)}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </CardContent>
                 </Card>
             </Grid>
@@ -249,6 +303,8 @@ const Movies = () => {
                     </CardContent>
                 </Card>
             </Grid>
+            </>
+            }
         </Grid>
     );
 };
