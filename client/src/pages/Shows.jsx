@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Typography, TextField, Box, Card, CardHeader, 
     Button, CardContent, MenuItem, Select, FormControl, InputLabel, TableBody, TableContainer } from '@mui/material';
-import { DateRangePicker } from '@mui/lab';
+import { DatePicker } from '@mui/lab';
 import { subDays } from 'date-fns';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import {retrieveTotalShows} from "../services/ShowService.js";
-// import from 'ShowService.js'
+import {retrieveTotalShows, retrieveHighestRatedShows, retrieveLowestRatedShows} from "../services/ShowService.js";
+import Loading from '../components/Loading.jsx';
+import { useTheme } from '@emotion/react';
 
 function createData(year, movie_title, minutes) {
     return { year, movie_title, minutes};
@@ -25,14 +26,44 @@ const Shows = () => {
 
     const [dateRange, setDateRange] = useState([subDays(new Date(), 7), new Date()]);
     const [totalShows , setTotalShows] = React.useState();
+    const [bestShows, setBestShows] = useState([]);
+    const [worstShows, setWorstShows] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    useEffect(
-        async () => {
-            const result = await retrieveTotalShows();
-            setTotalShows(result.match('[0-9]+'));
-        },
-        []
-      );
+    const theme = useTheme();
+
+    const removeDuplicates = (list) => {
+        let years = [];
+        let unique = [];
+        list.forEach((el) => {
+            if (!years.includes(el[0])) {
+                years.push(el[0]);
+                unique.push(el);
+            }
+        })
+        console.log(unique);
+        return unique;
+    }
+
+    const fetchData = async () => {
+        setLoading(true);
+        const tot = await retrieveTotalShows();
+        setTotalShows(tot.match('[0-9]+'));
+        const best = await retrieveHighestRatedShows(dateRange);
+        setBestShows(removeDuplicates(JSON.parse(best).rows));
+        const worst = await retrieveLowestRatedShows(dateRange);
+        setWorstShows(removeDuplicates(JSON.parse(worst).rows));
+        setLoading(false);
+    }
+
+    useEffect(async () => fetchData(), [dateRange]);
+
+    const changeDate = (newDate, fromto) => {
+        if (fromto == "from")
+            setDateRange([newDate, dateRange[1]]);
+        else
+            setDateRange([dateRange[0], newDate]);
+    }
 
     return (
         <Grid container spacing={2} padding={2} sx={{ width: '100%' }} alignItems='stretch'>
@@ -40,21 +71,27 @@ const Shows = () => {
                 <Typography variant='h4'>TV Shows</Typography>
                 <Typography variant='subtitle1'>Explore the cinematic universe.</Typography>
             </Grid>
-            <Grid item xs={4}>
-                <DateRangePicker
-                    startText="From"
-                    endText="To"
-                    value={dateRange}
-                    onChange={(newValue) => {setDateRange(newValue);}}
-                    renderInput={(startProps, endProps) => (
-                    <React.Fragment>
-                        <TextField {...startProps} />
-                        <Box sx={{ mx: 1 }}></Box>
-                        <TextField {...endProps} />
-                    </React.Fragment>
-                    )}
+            <Grid item xs={4} sx={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
+                <DatePicker
+                    views={['year']}
+                    label="From"
+                    value={dateRange[0]}
+                    onChange={(newValue) => changeDate(newValue, "from")}
+                    renderInput={(params) => <TextField {...params} helperText={null} />}
+                />
+                <DatePicker
+                    views={['year']}
+                    label="To"
+                    value={dateRange[1]}
+                    onChange={(newValue) => changeDate(newValue, "to")}
+                    renderInput={(params) => <TextField {...params} helperText={null} />}
                 />
             </Grid>
+            {loading ?
+            <div sx={{ height: '100%', width: '100%', alignItems: 'center' }}>
+                <Loading />
+            </div> :
+            <>
             <Grid item xs={4}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -147,26 +184,60 @@ const Shows = () => {
             <Grid item xs={3}>
                 <Card sx={{ height: '100%' }}>
                     <CardHeader
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
+                        title="Highest Rated Shows"
+                        subheader="The best shows of each year"
                     />
                     <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
+                        <TableContainer >
+                            <Table>
+                                <TableBody>
+                                    {bestShows.map((show) => (
+                                        <TableRow
+                                        key={show[0]}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {show[0]}
+                                            </TableCell>
+                                            <TableCell align="right">{show[1]}</TableCell>
+                                            <TableCell align="right" sx={{ color: `${theme.palette.primary.main}` }}>
+                                                {Math.round(show[2], 1)}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </CardContent>
                 </Card>
             </Grid>
             <Grid item xs={3}>
                 <Card sx={{ height: '100%' }}>
                     <CardHeader
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
+                        title="Lowest Rated Shows"
+                        subheader="The worst shows of each year"
                     />
                     <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
+                        <TableContainer >
+                            <Table>
+                                <TableBody>
+                                    {worstShows.map((show) => (
+                                        <TableRow
+                                        key={show[0]}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {show[0]}
+                                            </TableCell>
+                                            <TableCell align="right">{show[1]}</TableCell>
+                                            <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
+                                                {Math.round(show[2], 1)}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </CardContent>
                 </Card>
             </Grid>
@@ -232,6 +303,8 @@ const Shows = () => {
                     </CardContent>
                 </Card>
             </Grid>
+            </>
+            }
         </Grid>
     );
 };

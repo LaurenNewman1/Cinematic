@@ -9,6 +9,7 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import {retrieveHighestRatedMovies, retrieveLongestMovies, retrieveLowestRatedMovies, retrieveTotalMovies} from "../services/MovieService.js";
 import Loading from '../components/Loading.jsx';
+import { useTheme } from '@emotion/react';
 
 function createData(year, movie_title, minutes) {
     return { year, movie_title, minutes};
@@ -30,6 +31,7 @@ const Movies = () => {
     const [bestMovies, setBestMovies] = useState([]);
     const [worstMovies, setWorstMovies] = useState([]);
     const [loading, setLoading] = useState(false);
+    const theme = useTheme();
 
     const removeDuplicates = (list) => {
         let years = [];
@@ -204,7 +206,9 @@ const Movies = () => {
                                                 {movie[0]}
                                             </TableCell>
                                             <TableCell align="right">{movie[1]}</TableCell>
-                                            <TableCell align="right">{Math.round(movie[2], 1)}</TableCell>
+                                            <TableCell align="right" sx={{ color: `${theme.palette.primary.main}` }}>
+                                                {Math.round(movie[2], 1)}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -232,7 +236,9 @@ const Movies = () => {
                                                 {movie[0]}
                                             </TableCell>
                                             <TableCell align="right">{movie[1]}</TableCell>
-                                            <TableCell align="right">{Math.round(movie[2], 1)}</TableCell>
+                                            <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
+                                                {Math.round(movie[2], 1)}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

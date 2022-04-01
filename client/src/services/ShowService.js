@@ -17,3 +17,14 @@ export const retrieveShortestShows = async () => {
     console.log(result);
     return result;
 };
+
+export const retrieveHighestRatedShows = async (dateRange) => {
+    const result = await makeGetRequest(`/api/highest_rated_shows/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
+    console.log(result)
+    return result;
+};
+
+export const retrieveLowestRatedShows = async (dateRange) => {
+    const result = await makeGetRequest(`/api/lowest_rated_shows/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
+    return result;
+};
