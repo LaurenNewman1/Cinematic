@@ -6,11 +6,11 @@ import { DatePicker } from '@mui/lab';
 import { subDays } from 'date-fns';
 // import from 'CastCrewService.js'
 import { retrieveTotalActors, retrieveHighestActor, retrieveHighestDirector, 
-    retrieveHighestWriter, retrieveAvgRating } from '../services/CastCrewService';
+    retrieveHighestWriter, retrieveAvgRating, retrieveRoleGenreActor, retrieveRoleGenreDirector} from '../services/CastCrewService';
 import { useTheme } from '@emotion/react';
 import Loading from '../components/Loading.jsx';
-import { ArgumentAxis, ValueAxis, Chart, LineSeries, AreaSeries } from '@devexpress/dx-react-chart-material-ui';
-import {ValueScale, ArgumentScale} from '@devexpress/dx-react-chart';
+import { ArgumentAxis, ValueAxis, Chart, LineSeries, AreaSeries, BarSeries, Legend } from '@devexpress/dx-react-chart-material-ui';
+import {ValueScale, ArgumentScale, Palette, Stack} from '@devexpress/dx-react-chart';
 import { scaleBand } from '@devexpress/dx-chart-core';
 
 
@@ -18,11 +18,39 @@ const CastCrew = () => {
 
     const theme = useTheme();
 
+    const scheme = [theme.palette.primary.main, theme.palette.secondary.main, theme.palette.accent1.main];
+
     function formatData(data) {
         let formatted = [];
         data.forEach(d => {
             formatted.push({x: d[0], y: Math.round(d[1], 2)});
         });
+        return formatted;
+    }
+
+    function getCol(matrix){
+        var column = [];
+        for(var i=0; i<matrix.length; i++){
+           column.push(matrix[i][0]);
+        }
+        return column;
+     }
+
+    function formatBarChart(data1, data2, data3) {
+        let formatted = [];
+        const start = dateRange[0].getYear() + 1900;
+        const end = dateRange[1].getYear() + 1900;
+        for (var d = start; d <= end; d++) {
+            const i1 = getCol(data1).indexOf(d);
+            const i2 = getCol(data2).indexOf(d);
+            const i3 = getCol(data3).indexOf(d);
+            formatted.push({
+                x: d, 
+                y1: i1 === -1 ? 0 : data1.at(i1)[1], 
+                y2: i2 === -1 ? 0 : data2.at(i2)[1], 
+                y3: i3 === -1 ? 0 : data3.at(i3)[1]
+            });
+        }
         return formatted;
     }
 
@@ -42,11 +70,17 @@ const CastCrew = () => {
     const [dateRange, setDateRange] = useState([subDays(new Date(), 3650), new Date()]);
     const [actorSearch, setActorSearch] = useState("Tom Hanks");
     const [sendSearch, setSendSearch] = useState("Tom Hanks");
+    const [actorSearch2, setActorSearch2] = useState("Tom Hanks");
+    const [sendSearch2, setSendSearch2] = useState("Tom Hanks");
+    const [directorSearch, setDirectorSearch] = useState("Steven Spielberg");
+    const [sendDirectorSearch, setSendDirectorSearch] = useState("Steven Spielberg");
     const [totalActors , setTotalActors] = useState();
     const [loading, setLoading] = useState(false);
     const [highestActor, setHighestActor] = useState([]);
     const [highestDirector, setHighestDirector] = useState([]);
     const [highestWriter, setHighestWriter] = useState([]);
+    const [actorGenres, setActorGenres] = useState([]);
+    const [directorGenres, setDirectorGenres] = useState([]);
     const [avgRating, setAvgRating] = useState([]);
 
     const fetchData = async () => {
@@ -63,10 +97,22 @@ const CastCrew = () => {
         setHighestWriter(removeDuplicates(JSON.parse(writer).rows));
         const rating = await retrieveAvgRating(dateRange, actorSearch);
         setAvgRating(formatData(JSON.parse(rating).rows));
+        const aGenres1 = await retrieveRoleGenreActor(dateRange, actorSearch, "Comedy");
+        const aGenres2 = await retrieveRoleGenreActor(dateRange, actorSearch, "Drama");
+        const aGenres3 = await retrieveRoleGenreActor(dateRange, actorSearch, "Action");
+        setActorGenres(
+            formatBarChart(JSON.parse(aGenres1).rows, JSON.parse(aGenres2).rows, JSON.parse(aGenres3).rows)
+        );
+        const dGenres1 = await retrieveRoleGenreDirector(dateRange, directorSearch, "Comedy");
+        const dGenres2 = await retrieveRoleGenreDirector(dateRange, directorSearch, "Drama");
+        const dGenres3 = await retrieveRoleGenreDirector(dateRange, directorSearch, "Action");
+        setDirectorGenres(
+            formatBarChart(JSON.parse(dGenres1).rows, JSON.parse(dGenres2).rows, JSON.parse(dGenres3).rows)
+        );
         setLoading(false);
     }
 
-    useEffect(async () => fetchData(), [dateRange, sendSearch]);
+    useEffect(async () => fetchData(), [dateRange, sendSearch, sendSearch2, sendDirectorSearch]);
 
     const changeDate = (newDate, fromto) => {
         if (fromto == "from")
@@ -158,23 +204,36 @@ const CastCrew = () => {
             <Grid item xs={6}>
                 <Card sx={{ height: '100%' }}>
                     <CardHeader
+                        title="Roles by Genre Over Time"
+                        subheader="How many roles an actor had by genre"
                         action={
                             <FormControl sx={{ width: '100%' }}>
-                                <InputLabel>Button name</InputLabel>
-                                <Select label='Button name'>
-                                    {[].map((option) =>
-                                        <MenuItem>{option}</MenuItem>
-                                    )}
-                                </Select>
+                                <TextField
+                                    label="Enter Actor"
+                                    value={actorSearch2}
+                                    onChange={(e) => setActorSearch2(e.target.value)}
+                                    onKeyPress={(e) => { if (e.key === "Enter") { setSendSearch2(e.target.value); }}}
+                                />
                             </FormControl>
                         }
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
                     />
-                    <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
+                    <CardContent sx={{ 
+                        paddingBottom: 0, paddingBottom: 0, paddingTop: 0,
+                        "&:last-child": {
+                        paddingBottom: 0
+                        }}}>
+                        <Chart data={actorGenres} sx={{ maxHeight: 350 }}>
+                            <Palette scheme={scheme} />
+                            <ArgumentScale factory={scaleBand} />
+                            <ArgumentAxis />
+                            <ValueScale factory={scaleBand}/>
+                            <ValueAxis showGrid={false}/>
+                            <BarSeries valueField="y1" argumentField="x" name="Comedy" />
+                            <BarSeries valueField="y2" argumentField="x" name="Drama" />
+                            <BarSeries valueField="y3" argumentField="x" name="Action" />
+                            <Legend position='bottom' sx={{ maxHeight: 50}}/>
+                            <Stack />
+                        </Chart>
                     </CardContent>
                 </Card>
             </Grid>
@@ -183,21 +242,34 @@ const CastCrew = () => {
                     <CardHeader
                         action={
                             <FormControl sx={{ width: '100%' }}>
-                                <InputLabel>Button name</InputLabel>
-                                <Select label='Button name'>
-                                    {[].map((option) =>
-                                        <MenuItem>{option}</MenuItem>
-                                    )}
-                                </Select>
+                                <TextField
+                                    label="Enter Director"
+                                    value={directorSearch}
+                                    onChange={(e) => setDirectorSearch(e.target.value)}
+                                    onKeyPress={(e) => { if (e.key === "Enter") { setSendDirectorSearch(e.target.value); }}}
+                                />
                             </FormControl>
                         }
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
+                        title="Directors by Genre Over Time"
+                        subheader="How many films directed by genre"
                     />
-                    <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
+                    <CardContent sx={{ 
+                        paddingBottom: 0, paddingBottom: 0, paddingTop: 0,
+                        "&:last-child": {
+                        paddingBottom: 0
+                        }}}>
+                        <Chart data={directorGenres} sx={{ maxHeight: 350 }}>
+                            <Palette scheme={scheme} />
+                            <ArgumentScale factory={scaleBand} />
+                            <ArgumentAxis />
+                            <ValueScale factory={scaleBand}/>
+                            <ValueAxis showGrid={false}/>
+                            <BarSeries valueField="y1" argumentField="x" name="Comedy" />
+                            <BarSeries valueField="y2" argumentField="x" name="Drama" />
+                            <BarSeries valueField="y3" argumentField="x" name="Action" />
+                            <Legend position='bottom' sx={{ maxHeight: 50}}/>
+                            <Stack />
+                        </Chart>
                     </CardContent>
                 </Card>
             </Grid>

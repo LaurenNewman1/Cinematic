@@ -26,3 +26,13 @@ export const retrieveAvgRating = async (dateRange, name) => {
     const result = await makeGetRequest(`/api/avg_rating_actors/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}/${name}`);
     return result;
 };
+
+export const retrieveRoleGenreActor = async (dateRange, name, genre) => {
+    const result = await makeGetRequest(`/api/roles_by_genre_actors/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}/${name}/${genre}`);
+    return result;
+};
+
+export const retrieveRoleGenreDirector = async (dateRange, name, genre) => {
+    const result = await makeGetRequest(`/api/roles_by_genre_directors/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}/${name}/${genre}`);
+    return result;
+};

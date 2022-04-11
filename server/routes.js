@@ -477,13 +477,53 @@ module.exports = (app, db) => {
             const data = await db.execute(
                 `SELECT StartYear, ROUND(AVG(AverageRating), 2) AS Rating
                 FROM "LAUREN.NEWMAN".Person 
-                NATURAL JOIN "LAUREN.NEWMAN".Principal 
-                NATURAL JOIN "LAUREN.NEWMAN".Title 
-                NATURAL JOIN "LAUREN.NEWMAN".Rating
+                NATURAL JOIN (SELECT Tconst, Nconst FROM "LAUREN.NEWMAN".Principal)
+                NATURAL JOIN (SELECT Tconst, StartYear FROM "LAUREN.NEWMAN".Title)
+                NATURAL JOIN (SELECT Tconst, AverageRating FROM "LAUREN.NEWMAN".Rating)
                 WHERE PrimaryName = '${req.params.name}'
                 AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
                 GROUP BY StartYear
                 ORDER BY StartYear ASC`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            console.log(err);
+            res.status(400).type('json').send(err);
+        }
+    });
+
+    app.get('/api/roles_by_genre_actors/:start/:end/:name/:genre', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT StartYear, COUNT(Tconst) AS Count
+                FROM "LAUREN.NEWMAN".Person 
+                NATURAL JOIN (SELECT Tconst, Nconst FROM "LAUREN.NEWMAN".Principal)
+                NATURAL JOIN (SELECT Tconst, StartYear, Genres FROM "LAUREN.NEWMAN".Title)
+                WHERE PrimaryName = '${req.params.name}'
+                AND Genres LIKE '%${req.params.genre}%'
+                AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                AND PrimaryProfession LIKE '%act%'
+                GROUP BY StartYear`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            console.log(err);
+            res.status(400).type('json').send(err);
+        }
+    });
+
+    app.get('/api/roles_by_genre_directors/:start/:end/:name/:genre', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT StartYear, COUNT(Tconst) AS Count
+                FROM "LAUREN.NEWMAN".Person 
+                NATURAL JOIN (SELECT Tconst, Nconst FROM "LAUREN.NEWMAN".Principal)
+                NATURAL JOIN (SELECT Tconst, StartYear, Genres FROM "LAUREN.NEWMAN".Title)
+                WHERE PrimaryName = '${req.params.name}'
+                AND Genres LIKE '%${req.params.genre}%'
+                AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                AND PrimaryProfession LIKE '%direct%'
+                GROUP BY StartYear`,
             );
             res.status(200).type('json').send(data);
         } catch (err) {
