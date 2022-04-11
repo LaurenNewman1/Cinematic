@@ -872,6 +872,11 @@
   "resolved" "https://registry.npmjs.org/@devexpress/dx-core/-/dx-core-3.0.2.tgz"
   "version" "3.0.2"
 
+"@devexpress/dx-grid-core@3.0.2":
+  "integrity" "sha512-v1S6Jj09V2q490N4AEvsBwppPztCaxPpddJd/ptYgksY7dodCh6mLPUjs3gPWECDRBdfodiXJC3z5Ma0pNodGw=="
+  "resolved" "https://registry.npmjs.org/@devexpress/dx-grid-core/-/dx-grid-core-3.0.2.tgz"
+  "version" "3.0.2"
+
 "@devexpress/dx-react-chart-material-ui@^3.0.2":
   "integrity" "sha512-s6CSnYI1nPUyyM7OgKf1E9IKyzntpK3H5k+QmbgL8AJdwRhjOEekeSICbraLgmrptWOtASbPNd2KfZVqCdzHXw=="
   "resolved" "https://registry.npmjs.org/@devexpress/dx-react-chart-material-ui/-/dx-react-chart-material-ui-3.0.2.tgz"
@@ -896,6 +901,21 @@
   dependencies:
     "@devexpress/dx-core" "3.0.2"
     "prop-types" "^15.7.2"
+
+"@devexpress/dx-react-grid-material-ui@^3.0.2":
+  "integrity" "sha512-+jF5VDe6PZdnQwR/nFSt6IeD0cW0ZF14XrxQhzS/OVYwLVpFTALzzAwFEHAE9VYhFmm3u1/Qmk/oyOG/byqaEA=="
+  "resolved" "https://registry.npmjs.org/@devexpress/dx-react-grid-material-ui/-/dx-react-grid-material-ui-3.0.2.tgz"
+  "version" "3.0.2"
+  dependencies:
+    "clsx" "^1.0.4"
+    "prop-types" "^15.7.2"
+
+"@devexpress/dx-react-grid@3.0.2":
+  "integrity" "sha512-56taRcVqYDsDakXWHTRuZo3KpllNATbanV/qXtwjaZlUMcj3TAuLRsL2Rfnms9Dp1qJpZAKrp+nXy7gCuZbeSw=="
+  "resolved" "https://registry.npmjs.org/@devexpress/dx-react-grid/-/dx-react-grid-3.0.2.tgz"
+  "version" "3.0.2"
+  dependencies:
+    "@devexpress/dx-grid-core" "3.0.2"
 
 "@emotion/babel-plugin@^11.7.1":
   "integrity" "sha512-6mGSCWi9UzXut/ZAN6lGFu33wGR3SJisNl3c0tvlmb8XChH1b2SUvxvnOh7hvLpqyRdHHU9AiazV3Cwbk5SXKQ=="
@@ -1040,7 +1060,7 @@
   dependencies:
     "@babel/runtime" "^7.17.2"
 
-"@mui/lab@^5.0.0-alpha.71":
+"@mui/lab@^5.0.0-alpha.50", "@mui/lab@^5.0.0-alpha.71":
   "integrity" "sha512-opml6yNpDvJzrCM9XzbckZMtfah+jFrYB8nB6kzORaQ3ixcMt+7RbFTPXG7NvQxW8VdxlGgfeBAMSWLDiFVMWA=="
   "resolved" "https://registry.npmjs.org/@mui/lab/-/lab-5.0.0-alpha.72.tgz"
   "version" "5.0.0-alpha.72"

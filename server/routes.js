@@ -47,17 +47,15 @@ module.exports = (app, db) => {
         try {
             const data = await db.execute(
                 `SELECT t1.startyear, t1.primarytitle, t1.runtimeminutes
-                FROM "LAUREN.NEWMAN".title t1
-                INNER JOIN
-                ( SELECT startyear, MAX(runtimeminutes) AS maxRuntime
-                  FROM "LAUREN.NEWMAN".title
-                  GROUP BY startyear) t2
+                FROM "LAUREN.NEWMAN".title t1 INNER JOIN
+               ( SELECT startyear, MIN(runtimeminutes) AS maxRuntime
+                FROM "LAUREN.NEWMAN".title GROUP BY startyear) t2
                 ON t1.startyear = t2.startyear
                 WHERE t1.titletype = 'movie' and t1.runtimeminutes != '\N'
                 AND t1.runtimeminutes = t2.maxruntime
-                AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
-                GROUP BY StartYear
-                ORDER BY startyear ASC`,
+                AND t1.StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                GROUP BY t1.StartYear, t1.primarytitle, t1.runtimeminutes
+                ORDER BY t1.startyear ASC`,
             );
             res.status(200).type('json').send(data);
         } catch (err) {
@@ -69,17 +67,15 @@ module.exports = (app, db) => {
         try {
             const data = await db.execute(
                 `SELECT t1.startyear, t1.primarytitle, t1.runtimeminutes
-                FROM "LAUREN.NEWMAN".title t1
-                INNER JOIN
-                ( SELECT startyear, MIN(runtimeminutes) AS maxRuntime
-                  FROM "LAUREN.NEWMAN".title
-                  GROUP BY startyear) t2
+                FROM "LAUREN.NEWMAN".title t1 INNER JOIN
+               ( SELECT startyear, MAX(runtimeminutes) AS maxRuntime
+                FROM "LAUREN.NEWMAN".title GROUP BY startyear) t2
                 ON t1.startyear = t2.startyear
                 WHERE t1.titletype = 'movie' and t1.runtimeminutes != '\N'
                 AND t1.runtimeminutes = t2.maxruntime
-                AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
-                GROUP BY StartYear
-                ORDER BY startyear ASC`,
+                AND t1.StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                GROUP BY t1.StartYear, t1.primarytitle, t1.runtimeminutes
+                ORDER BY t1.startyear ASC`,
             );
             res.status(200).type('json').send(data);
         } catch (err) {
@@ -109,17 +105,14 @@ module.exports = (app, db) => {
         try {
             const data = await db.execute(
                 `SELECT t1.startyear, t1.primarytitle, t1.runtimeminutes
-                FROM "LAUREN.NEWMAN".title t1
-                INNER JOIN
-                ( SELECT startyear, MAX(runtimeminutes) AS maxRuntime
-                  FROM "LAUREN.NEWMAN".title
-                  GROUP BY startyear) t2
+                FROM "LAUREN.NEWMAN".title t1 INNER JOIN
+               ( SELECT startyear, MIN(runtimeminutes) AS maxRuntime
+                FROM "LAUREN.NEWMAN".title GROUP BY startyear) t2
                 ON t1.startyear = t2.startyear
-                WHERE t1.titletype = 'tvSeries' and t1.runtimeminutes != '\N'
+                WHERE t1.titletype = 'tvSeries' 
                 AND t1.runtimeminutes = t2.maxruntime
-                AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
-                GROUP BY StartYear
-                ORDER BY startyear ASC`,
+                AND t1.StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                ORDER BY t1.startyear ASC`,
             );
             res.status(200).type('json').send(data);
         } catch (err) {
@@ -131,16 +124,14 @@ module.exports = (app, db) => {
         try {
             const data = await db.execute(
                 `SELECT t1.startyear, t1.primarytitle, t1.runtimeminutes
-                FROM "LAUREN.NEWMAN".title t1
-                INNER JOIN
-                ( SELECT startyear, MIN(runtimeminutes) AS maxRuntime
-                  FROM "LAUREN.NEWMAN".title
-                  GROUP BY startyear) t2
+                FROM "LAUREN.NEWMAN".title t1 INNER JOIN
+               ( SELECT startyear, MAX(runtimeminutes) AS maxRuntime
+                FROM "LAUREN.NEWMAN".title GROUP BY startyear) t2
                 ON t1.startyear = t2.startyear
-                WHERE t1.titletype = 'tvSeries' and t1.runtimeminutes != '\N'
+                WHERE t1.titletype = 'tvSeries' 
                 AND t1.runtimeminutes = t2.maxruntime
-                AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
-                ORDER BY startyear ASC`,
+                AND t1.StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                ORDER BY t1.startyear ASC`,
               )
             ;
             res.status(200).type('json').send(data);
