@@ -6,13 +6,13 @@ export const retrieveTotalShows = async () => {
     console.log(result);
     return result;
 };
-export const retrieveLongestShows = async () => {
-    const result = await makeGetRequest('/api/longest_show');
+export const retrieveLongestShows = async (dateRange) => {
+    const result = await makeGetRequest(`/api/longest_shows/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
     console.log(result);
     return result;
 };
-export const retrieveShortestShows = async () => {
-    const result = await makeGetRequest('/api/shortest_show');
+export const retrieveShortestShows = async (dateRange) => {
+    const result = await makeGetRequest(`/api/shortest_shows/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
     console.log(result);
     return result;
 };

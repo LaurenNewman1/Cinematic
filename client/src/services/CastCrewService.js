@@ -4,7 +4,7 @@ import {makeGetRequest} from "../services/service.js"
 
 export const retrieveTotalActors = async () => {
     const result = await makeGetRequest('/api/total_actors');
-    console.log(result);
+    return result;
 };
 
 export const retrieveHighestActor = async (dateRange) => {

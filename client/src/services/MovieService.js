@@ -6,13 +6,13 @@ export const retrieveTotalMovies = async () => {
     return result;
 };
 
-export const retrieveLongestMovies = async () => {
-    const result = await makeGetRequest('/api/longest_movies');
+export const retrieveLongestMovies = async (dateRange) => {
+    const result = await makeGetRequest(`/api/longest_movies/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
     return result;
 };
 
-export const retrieveShortestMovies = async () => {
-    const result = await makeGetRequest('/api/shortest_movies');
+export const retrieveShortestMovies = async (dateRange) => {
+    const result = await makeGetRequest(`/api/shortest_movies/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
     return result;
 };
 

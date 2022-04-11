@@ -19,7 +19,7 @@ function createData(year, movie_title, minutes) {
 
 const Shows = () => {
 
-    const [dateRange, setDateRange] = useState([subDays(new Date(), 7), new Date()]);
+    const [dateRange, setDateRange] = useState([subDays(new Date(), 3650), new Date()]);
     const [totalShows , setTotalShows] = React.useState();
     const [bestShows, setBestShows] = useState([]);
     const [worstShows, setWorstShows] = useState([]);
@@ -60,10 +60,11 @@ const Shows = () => {
         setBestShows(removeDuplicates(JSON.parse(best).rows));
         const worst = await retrieveLowestRatedShows(dateRange);
         setWorstShows(removeDuplicates(JSON.parse(worst).rows));
-        const longest = await retrieveLongestShows(dateRange);
-        setLongestShows(removeDuplicates(JSON.parse(longest).rows));
-        const shortest = await retrieveShortestShows(dateRange);
-        setShortestShows(removeDuplicates(JSON.parse(shortest).rows));
+        // TODO
+        //const longest = await retrieveLongestShows(dateRange);
+        //setLongestShows(removeDuplicates(JSON.parse(longest).rows));
+        //const shortest = await retrieveShortestShows(dateRange);
+        //setShortestShows(removeDuplicates(JSON.parse(shortest).rows));
         const runtime = await retrieveAvgRuntime(dateRange);
         setAvgRuntimes(JSON.parse(runtime).rows);
         const rating = await retrieveAvgRating(dateRange);

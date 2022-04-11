@@ -32,7 +32,10 @@ module.exports = (app, db) => {
         const data = await db.execute(
             `SELECT COUNT(tconst) 
             FROM "LAUREN.NEWMAN".title
-            WHERE titletype = 'movie' GROUP BY titletype`,
+            WHERE Tconst NOT IN (
+                SELECT ParentTconst AS Tconst
+                FROM "LAUREN.NEWMAN".Episode
+            )`
         );
         res.status(200).type('json').send(data);
         } catch (err) {
@@ -91,7 +94,10 @@ module.exports = (app, db) => {
         const data = await db.execute(
             `SELECT COUNT(tconst) 
             FROM "LAUREN.NEWMAN".title
-            WHERE titletype = 'tvSeries' GROUP BY titletype`,
+            WHERE Tconst IN (
+                SELECT ParentTconst AS Tconst
+                FROM "LAUREN.NEWMAN".Episode
+            )`
         );
         res.status(200).type('json').send(data);
         } catch (err) {
@@ -238,10 +244,9 @@ module.exports = (app, db) => {
     app.get('/api/total_actors', async(req, res) => {
         try {
         const data = await db.execute(
-            `SELECT SUM(COUNT(tconst))
-            FROM "LAUREN.NEWMAN".principal
-            WHERE category = 'actor' or category = 'director' or category = 'actress'
-            GROUP BY category`,
+            `SELECT COUNT(Nconst)
+            FROM "LAUREN.NEWMAN".Person
+            `
         );
         res.status(200).type('json').send(data);
         } catch (err) {
@@ -332,24 +337,24 @@ module.exports = (app, db) => {
     app.get('/api/highest_actor/:start/:end', async(req, res) => {
         try {
             const data = await db.execute(
-                `SELECT StartYear, Nconst, tot
+                `SELECT StartYear, PrimaryName, tot
                 FROM (
                     SELECT *
                     FROM (
                         SELECT StartYear, MAX(tot) AS tot
                         FROM (
-                            SELECT COUNT(Tconst) AS tot, StartYear, Nconst
-                            FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title
+                            SELECT COUNT(Tconst) AS tot, StartYear, PrimaryName
+                            FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Person
                             WHERE Category = 'actor' OR Category = 'actress'
-                            GROUP BY Nconst, StartYear
+                            GROUP BY PrimaryName, StartYear
                         )
                         GROUP BY StartYear
                     )
                     NATURAL JOIN (
-                        SELECT COUNT(Tconst) AS tot, StartYear, Nconst
-                        FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title
+                        SELECT COUNT(Tconst) AS tot, StartYear, PrimaryName
+                        FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Person
                         WHERE Category = 'actor' OR Category = 'actress'
-                        GROUP BY Nconst, StartYear
+                        GROUP BY PrimaryName, StartYear
                     )
                 )
                 WHERE StartYear BETWEEN ${req.params.start} AND ${req.params.end}
@@ -365,24 +370,24 @@ module.exports = (app, db) => {
     app.get('/api/highest_director/:start/:end', async(req, res) => {
         try {
             const data = await db.execute(
-                `SELECT StartYear, Nconst, tot
+                `SELECT StartYear, PrimaryName, tot
                 FROM (
                     SELECT *
                     FROM (
                         SELECT StartYear, MAX(tot) AS tot
                         FROM (
                             SELECT COUNT(Tconst) AS tot, StartYear, Nconst
-                            FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title
+                            FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Person
                             WHERE Category = 'director'
                             GROUP BY Nconst, StartYear
                         )
                         GROUP BY StartYear
                     )
                     NATURAL JOIN (
-                        SELECT COUNT(Tconst) AS tot, StartYear, Nconst
-                        FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title
+                        SELECT COUNT(Tconst) AS tot, StartYear, PrimaryName
+                        FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Person
                         WHERE Category = 'director'
-                        GROUP BY Nconst, StartYear
+                        GROUP BY PrimaryName, StartYear
                     )
                 )
                 WHERE StartYear BETWEEN ${req.params.start} AND ${req.params.end}
@@ -398,24 +403,24 @@ module.exports = (app, db) => {
     app.get('/api/highest_writer/:start/:end', async(req, res) => {
         try {
             const data = await db.execute(
-                `SELECT StartYear, Nconst, tot
+                `SELECT StartYear, PrimaryName, tot
                 FROM (
                     SELECT *
                     FROM (
                         SELECT StartYear, MAX(tot) AS tot
                         FROM (
                             SELECT COUNT(Tconst) AS tot, StartYear, Nconst
-                            FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title
+                            FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Person
                             WHERE Category = 'writer'
                             GROUP BY Nconst, StartYear
                         )
                         GROUP BY StartYear
                     )
                     NATURAL JOIN (
-                        SELECT COUNT(Tconst) AS tot, StartYear, Nconst
-                        FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title
+                        SELECT COUNT(Tconst) AS tot, StartYear, PrimaryName
+                        FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Person
                         WHERE Category = 'writer'
-                        GROUP BY Nconst, StartYear
+                        GROUP BY PrimaryName, StartYear
                     )
                 )
                 WHERE StartYear BETWEEN ${req.params.start} AND ${req.params.end}

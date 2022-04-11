@@ -20,7 +20,7 @@ function createData(year, movie_title, minutes) {
 
 const Movies = () => {
 
-    const [dateRange, setDateRange] = useState([subDays(new Date(), 365), new Date()]);
+    const [dateRange, setDateRange] = useState([subDays(new Date(), 3650), new Date()]);
     const [totalMovies , setTotalMovies] = useState();
     const [longestMovies, setLongestMovies] = useState([]);
     const [shortestMovies, setShortestMovies] = useState([]);
@@ -56,10 +56,11 @@ const Movies = () => {
         setLoading(true);
         const tot = await retrieveTotalMovies();
         setTotalMovies(tot.match('[0-9]+'));
-        const longest = await retrieveLongestMovies(dateRange);
-        setLongestMovies(removeDuplicates(JSON.parse(longest).rows))
-        const shortest = await retrieveShortestMovies(dateRange);
-        setShortestMovies(removeDuplicates(JSON.parse(shortest).rows));
+        // TODO
+        //const longest = await retrieveLongestMovies(dateRange);
+        //setLongestMovies(removeDuplicates(JSON.parse(longest).rows))
+        //const shortest = await retrieveShortestMovies(dateRange);
+        //setShortestMovies(removeDuplicates(JSON.parse(shortest).rows));
         const best = await retrieveHighestRatedMovies(dateRange);
         setBestMovies(removeDuplicates(JSON.parse(best).rows));
         const worst = await retrieveLowestRatedMovies(dateRange);
@@ -272,7 +273,7 @@ const Movies = () => {
                                                 {movie[0]}
                                             </TableCell>
                                             <TableCell align="right">{movie[1]}</TableCell>
-                                            <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
+                                            <TableCell align="right" sx={{ color: `${theme.palette.accent2.main}` }}>
                                                 {Math.round(movie[2], 1)}
                                             </TableCell>
                                             </TableRow>
@@ -304,7 +305,7 @@ const Movies = () => {
                                                 {movie[0]}
                                             </TableCell>
                                             <TableCell align="right">{movie[1]}</TableCell>
-                                            <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
+                                            <TableCell align="right" sx={{ color: `${theme.palette.secondary.main}` }}>
                                                 {Math.round(movie[2], 1)}
                                             </TableCell>
                                             </TableRow>

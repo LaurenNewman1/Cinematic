@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Typography, TextField, Box, Card, CardHeader, 
-    Button, CardContent, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+    Button, CardContent, MenuItem, Select, FormControl, InputLabel,
+    Table, TableContainer, TableBody, TableRow, TableCell} from '@mui/material';
 import { DatePicker } from '@mui/lab';
 import { subDays } from 'date-fns';
 // import from 'CastCrewService.js'
 import { retrieveTotalActors, retrieveHighestActor, retrieveHighestDirector, retrieveHighestWriter } from '../services/CastCrewService';
+import { useTheme } from '@emotion/react';
+import Loading from '../components/Loading.jsx';
 
 
 const CastCrew = () => {
+
+    const theme = useTheme();
 
     const removeDuplicates = (list) => {
         let years = [];
@@ -22,7 +27,7 @@ const CastCrew = () => {
         return unique;
     }
 
-    const [dateRange, setDateRange] = useState([subDays(new Date(), 7), new Date()]);
+    const [dateRange, setDateRange] = useState([subDays(new Date(), 3650), new Date()]);
     const [totalActors , setTotalActors] = useState();
     const [loading, setLoading] = useState(false);
     const [highestActor, setHighestActor] = useState([]);
@@ -76,6 +81,11 @@ const CastCrew = () => {
                     renderInput={(params) => <TextField {...params} helperText={null} />}
                 />
             </Grid>
+            {loading ?
+            <div sx={{ height: '100%', width: '100%', alignItems: 'center' }}>
+                <Loading />
+            </div> :
+            <>
             <Grid item xs={4}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -170,13 +180,90 @@ const CastCrew = () => {
             <Grid item xs={3}>
                 <Card sx={{ height: '100%' }}>
                     <CardHeader
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
+                        title="Highest Premiered Actor"
+                        subheader="Actors that have been in the most."
                     />
                     <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
+                        <TableContainer >
+                            <Table>
+                                <TableBody>
+                                    {highestActor.map((actor) => (
+                                        <TableRow
+                                        key={actor[0]}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {actor[0]}
+                                            </TableCell>
+                                            <TableCell align="right">{actor[1]}</TableCell>
+                                            <TableCell align="right" sx={{ color: `${theme.palette.primary.main}` }}>
+                                                {Math.round(actor[2], 1)}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </CardContent>
+                </Card>
+            </Grid>
+            <Grid item xs={3}>
+                <Card sx={{ height: '100%' }}>
+                    <CardHeader
+                        title="Highest Premiered Director"
+                        subheader="Directors that have been in the most."
+                    />
+                    <CardContent>
+                        <TableContainer >
+                            <Table>
+                                <TableBody>
+                                    {highestActor.map((actor) => (
+                                        <TableRow
+                                        key={actor[0]}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {actor[0]}
+                                            </TableCell>
+                                            <TableCell align="right">{actor[1]}</TableCell>
+                                            <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
+                                                {Math.round(actor[2], 1)}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </CardContent>
+                </Card>
+            </Grid>
+            <Grid item xs={3}>
+                <Card sx={{ height: '100%' }}>
+                    <CardHeader
+                        title="Highest Premiered Writer"
+                        subheader="Writers that have been in the most."
+                    />
+                    <CardContent>
+                        <TableContainer >
+                            <Table>
+                                <TableBody>
+                                    {highestDirector.map((director) => (
+                                        <TableRow
+                                        key={director[0]}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {director[0]}
+                                            </TableCell>
+                                            <TableCell align="right">{director[1]}</TableCell>
+                                            <TableCell align="right" sx={{ color: `${theme.palette.accent2.main}` }}>
+                                                {Math.round(director[2], 1)}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </CardContent>
                 </Card>
             </Grid>
@@ -187,38 +274,31 @@ const CastCrew = () => {
                         subheader="Insert subtitle here"
                     />
                     <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
+                        <TableContainer >
+                            <Table>
+                                <TableBody>
+                                    {highestWriter.map((writer) => (
+                                        <TableRow
+                                        key={writer[0]}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {writer[0]}
+                                            </TableCell>
+                                            <TableCell align="right">{writer[1]}</TableCell>
+                                            <TableCell align="right" sx={{ color: `${theme.palette.secondary.main}` }}>
+                                                {Math.round(writer[2], 1)}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </CardContent>
                 </Card>
             </Grid>
-            <Grid item xs={3}>
-                <Card sx={{ height: '100%' }}>
-                    <CardHeader
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
-                    />
-                    <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
-                    </CardContent>
-                </Card>
-            </Grid>
-            <Grid item xs={3}>
-                <Card sx={{ height: '100%' }}>
-                    <CardHeader
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
-                    />
-                    <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
-                    </CardContent>
-                </Card>
-            </Grid>
+            </>
+            }
         </Grid>
     );
 };
