@@ -1,13 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid, Typography, TextField, Box, Card, CardHeader, 
     Button, CardContent, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { DatePicker } from '@mui/lab';
 import { subDays } from 'date-fns';
-// import from 'CastCrewService.js'
+import { retrieveHighestActor, retrieveHighestDirector, retrieveHighestWriter } from '../services/CastCrewService';
 
 const CastCrew = () => {
 
+    const removeDuplicates = (list) => {
+        let years = [];
+        let unique = [];
+        list.forEach((el) => {
+            if (!years.includes(el[0])) {
+                years.push(el[0]);
+                unique.push(el);
+            }
+        })
+        console.log(unique);
+        return unique;
+    }
+
     const [dateRange, setDateRange] = useState([subDays(new Date(), 7), new Date()]);
+    const [loading, setLoading] = useState(false);
+    const [highestActor, setHighestActor] = useState([]);
+    const [highestDirector, setHighestDirector] = useState([]);
+    const [highestWriter, setHighestWriter] = useState([]);
+
+    const fetchData = async () => {
+        setLoading(true);
+        const actor = await retrieveHighestActor(dateRange);
+        setHighestActor(removeDuplicates(JSON.parse(actor).rows));
+        console.log(actor);
+        const director = await retrieveHighestDirector(dateRange);
+        setHighestDirector(removeDuplicates(JSON.parse(director).rows));
+        console.log(director);
+        const writer = await retrieveHighestWriter(dateRange);
+        setHighestWriter(removeDuplicates(JSON.parse(writer).rows));
+        console.log(writer);
+        setLoading(false);
+    }
+
+    useEffect(async () => fetchData(), [dateRange]);
 
     const changeDate = (newDate, fromto) => {
         if (fromto == "from")

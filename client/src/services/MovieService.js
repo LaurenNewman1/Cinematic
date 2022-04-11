@@ -25,3 +25,13 @@ export const retrieveLowestRatedMovies = async (dateRange) => {
     const result = await makeGetRequest(`/api/lowest_rated_movies/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
     return result;
 };
+
+export const retrieveAvgRuntime = async (dateRange) => {
+    const result = await makeGetRequest(`/api/avg_runtime/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
+    return result;
+};
+
+export const retrieveAvgRating = async (dateRange) => {
+    const result = await makeGetRequest(`/api/avg_rating/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
+    return result;
+};
