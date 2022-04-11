@@ -1,13 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Grid, Typography, TextField, Box, Card, CardHeader, 
     Button, CardContent, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { DatePicker } from '@mui/lab';
 import { subDays } from 'date-fns';
+import { retrieveTotalActors } from '../services/CastCrewService';
 // import from 'CastCrewService.js'
 
 const CastCrew = () => {
 
     const [dateRange, setDateRange] = useState([subDays(new Date(), 7), new Date()]);
+    const [totalActors , setTotalActors] = useState();
+    const [loading, setLoading] = useState(false);
+
+    const fetchData = async () => {
+        setLoading(true);
+        const total = await retrieveTotalActors();
+        setTotalActors(total.match('[0-9]+'));
+        setLoading(false);
+    }
+
+    useEffect(async () => fetchData(), [dateRange]);
 
     const changeDate = (newDate, fromto) => {
         if (fromto == "from")
@@ -41,18 +53,20 @@ const CastCrew = () => {
             <Grid item xs={4}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <Card>
+                    <Card
+                        style={{backgroundColor: '#44c2b4'}}>
                             <CardHeader
-                                title="placeholder"
-                                subheader="placeholder"
+                                title={totalActors}
+                                subheader="Total actors and directors"
                             />
                         </Card>
                     </Grid>
                     <Grid item xs={12}>
-                        <Card>
+                        <Card
+                        style={{backgroundColor: '#f4738a'}}>
                             <CardHeader
-                                title="placeholder"
-                                subheader="placeholder"
+                                title="IMDb"
+                                subheader="primary data source"
                             />
                         </Card>
                     </Grid>

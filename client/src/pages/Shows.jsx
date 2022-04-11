@@ -6,7 +6,7 @@ import { subDays } from 'date-fns';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import {retrieveTotalShows, retrieveHighestRatedShows, retrieveLowestRatedShows} from "../services/ShowService.js";
+import {retrieveTotalShows, retrieveHighestRatedShows, retrieveLowestRatedShows, retrieveLongestShows, retrieveShortestShows} from "../services/ShowService.js";
 import Loading from '../components/Loading.jsx';
 import { useTheme } from '@emotion/react';
 
@@ -14,13 +14,7 @@ function createData(year, movie_title, minutes) {
     return { year, movie_title, minutes};
   }
   
-  const rows = [
-    createData( 2000, 'The Hunger Games', 200),
-    createData( 2001, 'The Hunger Games', 200),
-    createData( 2002, 'The Hunger Games', 200),
-    createData( 2003, 'The Hunger Games', 200),
-    createData( 2004, 'The Hunger Games', 200),
-  ];
+ 
 
 const Shows = () => {
 
@@ -29,6 +23,8 @@ const Shows = () => {
     const [bestShows, setBestShows] = useState([]);
     const [worstShows, setWorstShows] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [longestShows, setLongestShows] = useState([]);
+    const [shortestShows, setShortestShows] = useState([]);
 
     const theme = useTheme();
 
@@ -53,6 +49,10 @@ const Shows = () => {
         setBestShows(removeDuplicates(JSON.parse(best).rows));
         const worst = await retrieveLowestRatedShows(dateRange);
         setWorstShows(removeDuplicates(JSON.parse(worst).rows));
+        const longest = await retrieveLongestShows(dateRange);
+        setLongestShows(removeDuplicates(JSON.parse(longest).rows));
+        const shortest = await retrieveShortestShows(dateRange);
+        setShortestShows(removeDuplicates(JSON.parse(shortest).rows));
         setLoading(false);
     }
 
@@ -95,7 +95,8 @@ const Shows = () => {
             <Grid item xs={4}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <Card>
+                        <Card
+                         style={{backgroundColor: '#3283d2'}}>
                             <CardHeader
                                 title={totalShows}
                                 subheader="Total TV Shows"
@@ -103,7 +104,8 @@ const Shows = () => {
                         </Card>
                     </Grid>
                     <Grid item xs={12}>
-                        <Card>
+                        <Card
+                        style={{backgroundColor: '#44c2b4'}}>
                             <CardHeader
                                 title="IMDb"
                                 subheader="Primary data source"
@@ -252,17 +254,18 @@ const Shows = () => {
                         <TableContainer >
                                <Table>
                                    <TableBody>
-                                    {rows.map((row) => (
+                                    {shortestShows.map((show) => (
                                             <TableRow
-                                            key={row.year}
+                                            key={show[0]}
                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                             >
                                             <TableCell component="th" scope="row">
-                                                {row.name}
+                                                {show[0]}
                                             </TableCell>
-                                            <TableCell align="right">{row.year}</TableCell>
-                                            <TableCell align="right">{row.movie_title}</TableCell>
-                                            <TableCell align="right">{row.minutes}</TableCell>
+                                            <TableCell align="right">{show[1]}</TableCell>
+                                            <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
+                                                {Math.round(show[2], 1)}
+                                            </TableCell>
                                             </TableRow>
                                         ))}
                                </TableBody>
@@ -283,17 +286,18 @@ const Shows = () => {
                         <TableContainer >
                                <Table>
                                    <TableBody>
-                                    {rows.map((row) => (
+                                    {shortestShows.map((show) => (
                                             <TableRow
-                                            key={row.year}
+                                            key={show[0]}
                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                             >
                                             <TableCell component="th" scope="row">
-                                                {row.name}
+                                                {show[0]}
                                             </TableCell>
-                                            <TableCell align="right">{row.year}</TableCell>
-                                            <TableCell align="right">{row.movie_title}</TableCell>
-                                            <TableCell align="right">{row.minutes}</TableCell>
+                                            <TableCell align="right">{show[1]}</TableCell>
+                                            <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
+                                                {Math.round(show[2], 1)}
+                                            </TableCell>
                                             </TableRow>
                                         ))}
                                </TableBody>

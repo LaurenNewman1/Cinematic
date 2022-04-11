@@ -7,27 +7,21 @@ import LocalMoviesOutlinedIcon from '@mui/icons-material/LocalMoviesOutlined';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import {retrieveHighestRatedMovies, retrieveLongestMovies, retrieveLowestRatedMovies, retrieveTotalMovies} from "../services/MovieService.js";
+import {retrieveHighestRatedMovies, retrieveLongestMovies,retrieveShortestMovies, retrieveLowestRatedMovies, retrieveTotalMovies} from "../services/MovieService.js";
 import Loading from '../components/Loading.jsx';
 import { useTheme } from '@emotion/react';
 
 function createData(year, movie_title, minutes) {
     return { year, movie_title, minutes};
   }
-  
-  const rows = [
-    createData( 2000, 'The Hunger Games', 200),
-    createData( 2001, 'The Hunger Games', 200),
-    createData( 2002, 'The Hunger Games', 200),
-    createData( 2003, 'The Hunger Games', 200),
-    createData( 2004, 'The Hunger Games', 200),
-  ];
+    
 
 const Movies = () => {
 
     const [dateRange, setDateRange] = useState([subDays(new Date(), 365), new Date()]);
     const [totalMovies , setTotalMovies] = useState();
     const [longestMovies, setLongestMovies] = useState([]);
+    const [shortestMovies, setShortestMovies] = useState([]);
     const [bestMovies, setBestMovies] = useState([]);
     const [worstMovies, setWorstMovies] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -50,8 +44,10 @@ const Movies = () => {
         setLoading(true);
         const tot = await retrieveTotalMovies();
         setTotalMovies(tot.match('[0-9]+'));
-        const longest = await retrieveLongestMovies();
-        console.log(longest);
+        const longest = await retrieveLongestMovies(dateRange);
+        setLongestMovies(removeDuplicates(JSON.parse(longest).rows))
+        const shortest = await retrieveShortestMovies(dateRange);
+        setShortestMovies(removeDuplicates(JSON.parse(shortest).rows));
         const best = await retrieveHighestRatedMovies(dateRange);
         setBestMovies(removeDuplicates(JSON.parse(best).rows));
         const worst = await retrieveLowestRatedMovies(dateRange);
@@ -258,17 +254,18 @@ const Movies = () => {
                            <TableContainer >
                                <Table>
                                    <TableBody>
-                                    {rows.map((row) => (
+                                    {longestMovies.map((movie) => (
                                             <TableRow
-                                            key={row.year}
+                                            key={movie[0]}
                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                             >
                                             <TableCell component="th" scope="row">
-                                                {row.name}
+                                                {movie[0]}
                                             </TableCell>
-                                            <TableCell align="right">{row.year}</TableCell>
-                                            <TableCell align="right">{row.movie_title}</TableCell>
-                                            <TableCell align="right">{row.minutes}</TableCell>
+                                            <TableCell align="right">{movie[1]}</TableCell>
+                                            <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
+                                                {Math.round(movie[2], 1)}
+                                            </TableCell>
                                             </TableRow>
                                         ))}
                                </TableBody>
@@ -289,17 +286,18 @@ const Movies = () => {
                         <TableContainer >
                                <Table>
                                    <TableBody>
-                                    {rows.map((row) => (
+                                    {shortestMovies.map((movie) => (
                                             <TableRow
-                                            key={row.year}
+                                            key={movie[0]}
                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                             >
                                             <TableCell component="th" scope="row">
-                                                {row.name}
+                                                {movie[0]}
                                             </TableCell>
-                                            <TableCell align="right">{row.year}</TableCell>
-                                            <TableCell align="right">{row.movie_title}</TableCell>
-                                            <TableCell align="right">{row.minutes}</TableCell>
+                                            <TableCell align="right">{movie[1]}</TableCell>
+                                            <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
+                                                {Math.round(movie[2], 1)}
+                                            </TableCell>
                                             </TableRow>
                                         ))}
                                </TableBody>
