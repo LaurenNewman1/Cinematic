@@ -35,3 +35,8 @@ export const retrieveAvgRating = async (dateRange) => {
     const result = await makeGetRequest(`/api/avg_rating/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
     return result;
 };
+
+export const retrieveAltLang = async (dateRange) => {
+    const result = await makeGetRequest(`/api/alt_language/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
+    return result;
+};

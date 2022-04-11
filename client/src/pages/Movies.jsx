@@ -7,11 +7,14 @@ import LocalMoviesOutlinedIcon from '@mui/icons-material/LocalMoviesOutlined';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import {retrieveAvgRuntime, retrieveHighestRatedMovies, retrieveShortestMovies, retrieveLongestMovies, retrieveLowestRatedMovies, retrieveTotalMovies} from "../services/MovieService.js";
+import {retrieveAvgRuntime, retrieveHighestRatedMovies, retrieveShortestMovies, 
+    retrieveLongestMovies, retrieveLowestRatedMovies, retrieveTotalMovies, retrieveAltLang} from "../services/MovieService.js";
 import Loading from '../components/Loading.jsx';
 import { useTheme } from '@emotion/react';
 import { retrieveAvgRating } from '../services/ShowService.js';
-import { ArgumentAxis, ValueAxis, Chart, LineSeries} from '@devexpress/dx-react-chart-material-ui';
+import { ArgumentAxis, ValueAxis, Chart, LineSeries, AreaSeries } from '@devexpress/dx-react-chart-material-ui';
+import {ValueScale, ArgumentScale} from '@devexpress/dx-react-chart';
+import { scaleBand } from '@devexpress/dx-chart-core';
 
 function createData(year, movie_title, minutes) {
     return { year, movie_title, minutes};
@@ -28,13 +31,14 @@ const Movies = () => {
     const [worstMovies, setWorstMovies] = useState([]);
     const [avgRuntimes, setAvgRuntimes] = useState([]);
     const [avgRating, setAvgRating] = useState([]);
+    const [altLang, setAltLang] = useState([]);
     const [loading, setLoading] = useState(false);
     const theme = useTheme();
 
     function formatData(data) {
         let formatted = [];
         data.forEach(d => {
-            formatted.push({x: d[0], y: d[1]});
+            formatted.push({x: d[0], y: Math.round(d[1], 2)});
         });
         return formatted;
     }
@@ -69,7 +73,9 @@ const Movies = () => {
         setAvgRuntimes(JSON.parse(runtime).rows);
         const rating = await retrieveAvgRating(dateRange);
         setAvgRating(formatData(JSON.parse(rating).rows));
-        console.log(rating);
+        const lang = await retrieveAltLang(dateRange);
+        setAltLang(formatData(JSON.parse(lang).rows));
+        console.log(lang);
         setLoading(false);
     }
 
@@ -113,7 +119,7 @@ const Movies = () => {
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Card
-                        style={{backgroundColor: '#9f66e9'}}>
+                        style={{backgroundColor: '#9f66e9', height: 100 }}>
                             <CardHeader
                                 title={totalMovies}
                                 subheader="Total movies"
@@ -122,7 +128,7 @@ const Movies = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <Card className='data_source'
-                        style={{backgroundColor: '#f4738a'}}>
+                        style={{backgroundColor: '#f4738a', height: 100}}>
                             <CardHeader
                                 title="IMDb"
                                 subheader="Primary data source" 
@@ -135,23 +141,21 @@ const Movies = () => {
             <Grid item xs={8}>
                 <Card sx={{ height: '100%' }}>
                     <CardHeader
-                        action={
-                            <FormControl sx={{ width: '100%' }}>
-                                <InputLabel>Button name</InputLabel>
-                                <Select label='Button name'>
-                                    {[].map((option) =>
-                                        <MenuItem>{option}</MenuItem>
-                                    )}
-                                </Select>
-                            </FormControl>
-                        }
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
+                        title="Alternative Language Availability"
+                        subheader="An analysis of language translations over time."
                     />
-                    <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
+                    <CardContent sx={{ 
+                        paddingBottom: 0, paddingBottom: 0, paddingTop: 0,
+                        "&:last-child": {
+                        paddingBottom: 0
+                        }}}>
+                        <Chart data={altLang} sx={{ maxHeight: 130 }}>
+                            <ArgumentScale factory={scaleBand} />
+                            <ArgumentAxis />
+                            <ValueScale factory={scaleBand}/>
+                            <ValueAxis showGrid={false}/>
+                            <AreaSeries valueField="y" argumentField="x" />
+                        </Chart>
                     </CardContent>
                 </Card>
             </Grid>
@@ -187,7 +191,9 @@ const Movies = () => {
                     <CardContent>
                         <Chart data={avgRating}>
                             <ArgumentAxis />
+                            <ArgumentScale factory={scaleBand} />
                             <ValueAxis />
+                            <ValueScale factory={scaleBand} />
                             <LineSeries valueField="y" argumentField="x" />
                         </Chart>
                     </CardContent>

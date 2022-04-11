@@ -6,10 +6,14 @@ import { subDays } from 'date-fns';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import {retrieveTotalShows, retrieveHighestRatedShows, retrieveLowestRatedShows,retrieveLongestShows, retrieveShortestShows, retrieveAvgRuntime, retrieveAvgRating} from "../services/ShowService.js";
+import {retrieveTotalShows, retrieveHighestRatedShows, retrieveLowestRatedShows,
+    retrieveLongestShows, retrieveShortestShows, retrieveAvgRuntime, retrieveAvgRating,
+    retrieveAltLang} from "../services/ShowService.js";
 import Loading from '../components/Loading.jsx';
 import { useTheme } from '@emotion/react';
-import { ArgumentAxis, ValueAxis, Chart, LineSeries} from '@devexpress/dx-react-chart-material-ui';
+import { ArgumentAxis, ValueAxis, Chart, LineSeries, AreaSeries} from '@devexpress/dx-react-chart-material-ui';
+import {ValueScale, ArgumentScale, Palette} from '@devexpress/dx-react-chart';
+import { scaleBand } from '@devexpress/dx-chart-core';
 
 function createData(year, movie_title, minutes) {
     return { year, movie_title, minutes};
@@ -28,8 +32,11 @@ const Shows = () => {
     const [loading, setLoading] = useState(false);
     const [longestShows, setLongestShows] = useState([]);
     const [shortestShows, setShortestShows] = useState([]);
+    const [altLang, setAltLang] = useState([]);
 
     const theme = useTheme();
+
+    const scheme = [theme.palette.accent2.main];
 
     const removeDuplicates = (list) => {
         let years = [];
@@ -69,6 +76,8 @@ const Shows = () => {
         setAvgRuntimes(JSON.parse(runtime).rows);
         const rating = await retrieveAvgRating(dateRange);
         setAvgRating(formatData(JSON.parse(rating).rows));
+        const lang = await retrieveAltLang(dateRange);
+        setAltLang(formatData(JSON.parse(lang).rows));
         setLoading(false);
     }
 
@@ -112,7 +121,7 @@ const Shows = () => {
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Card
-                         style={{backgroundColor: '#3283d2'}}>
+                         style={{backgroundColor: '#3283d2', height: 100}}>
                             <CardHeader
                                 title={totalShows}
                                 subheader="Total TV Shows"
@@ -121,7 +130,7 @@ const Shows = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <Card
-                        style={{backgroundColor: '#44c2b4'}}>
+                        style={{backgroundColor: '#44c2b4', height: 100}}>
                             <CardHeader
                                 title="IMDb"
                                 subheader="Primary data source"
@@ -133,23 +142,22 @@ const Shows = () => {
             <Grid item xs={8}>
                 <Card sx={{ height: '100%' }}>
                     <CardHeader
-                        action={
-                            <FormControl sx={{ width: '100%' }}>
-                                <InputLabel>Button name</InputLabel>
-                                <Select label='Button name'>
-                                    {[].map((option) =>
-                                        <MenuItem>{option}</MenuItem>
-                                    )}
-                                </Select>
-                            </FormControl>
-                        }
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
+                        title="Alternative Language Availability"
+                        subheader="An analysis of language translations over time."
                     />
-                    <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
+                    <CardContent sx={{ 
+                        paddingBottom: 0, paddingBottom: 0, paddingTop: 0,
+                        "&:last-child": {
+                        paddingBottom: 0
+                        }}}>
+                        <Chart data={altLang} sx={{ maxHeight: 130 }}>
+                            <Palette scheme={scheme} />
+                            <ArgumentScale factory={scaleBand} />
+                            <ArgumentAxis />
+                            <ValueScale factory={scaleBand}/>
+                            <ValueAxis showGrid={false} sx={{color: `${theme.palette.accent2.main}`}}/>
+                            <AreaSeries valueField="y" argumentField="x" />
+                        </Chart>
                     </CardContent>
                 </Card>
             </Grid>
@@ -185,7 +193,9 @@ const Shows = () => {
                     <CardContent>
                         <Chart data={avgRating}>
                             <ArgumentAxis />
+                            <ArgumentScale factory={scaleBand} />
                             <ValueAxis />
+                            <ValueScale factory={scaleBand} />
                             <LineSeries valueField="y" argumentField="x" />
                         </Chart>
                     </CardContent>

@@ -56,7 +56,7 @@ const Page = ({children}) => {
                         minWidth: '150px'
                     }
                 }
-            }
+            },
         }
     });
 
