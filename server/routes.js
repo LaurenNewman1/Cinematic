@@ -531,5 +531,34 @@ module.exports = (app, db) => {
             res.status(400).type('json').send(err);
         }
     });
+
+    app.get('/api/stars/:start/:end', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT StartYear, PrimaryName, AverageRating
+                FROM Person NATURAL JOIN Principal
+                NATURAL JOIN (
+                    SELECT StartYear, Tconst, AverageRating
+                    FROM "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Rating
+                    WHERE (StartYear, AverageRating) IN (
+                        SELECT StartYear, MAX(AverageRating) AS AverageRating
+                        FROM "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Rating
+                        WHERE Tconst NOT IN (
+                            SELECT ParentTconst AS Tconst
+                            FROM "LAUREN.NEWMAN".Episode
+                        )
+                        AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                        GROUP BY StartYear
+                    )
+                )
+                WHERE Category = 'actor' OR Category = 'actress'
+                ORDER BY StartYear ASC`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            console.log(err);
+            res.status(400).type('json').send(err);
+        }
+    });
 };
 

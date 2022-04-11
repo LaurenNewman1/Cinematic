@@ -36,3 +36,8 @@ export const retrieveRoleGenreDirector = async (dateRange, name, genre) => {
     const result = await makeGetRequest(`/api/roles_by_genre_directors/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}/${name}/${genre}`);
     return result;
 };
+
+export const retrieveStars = async (dateRange) => {
+    const result = await makeGetRequest(`/api/stars/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
+    return result;
+};

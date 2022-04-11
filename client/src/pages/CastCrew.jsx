@@ -5,7 +5,7 @@ import { Grid, Typography, TextField, Box, Card, CardHeader,
 import { DatePicker } from '@mui/lab';
 import { subDays } from 'date-fns';
 // import from 'CastCrewService.js'
-import { retrieveTotalActors, retrieveHighestActor, retrieveHighestDirector, 
+import { retrieveTotalActors, retrieveHighestActor, retrieveHighestDirector, retrieveStars,
     retrieveHighestWriter, retrieveAvgRating, retrieveRoleGenreActor, retrieveRoleGenreDirector} from '../services/CastCrewService';
 import { useTheme } from '@emotion/react';
 import Loading from '../components/Loading.jsx';
@@ -82,6 +82,7 @@ const CastCrew = () => {
     const [actorGenres, setActorGenres] = useState([]);
     const [directorGenres, setDirectorGenres] = useState([]);
     const [avgRating, setAvgRating] = useState([]);
+    const [stars, setStars] = useState([]);
 
     const fetchData = async () => {
         setLoading(true);
@@ -97,6 +98,8 @@ const CastCrew = () => {
         setHighestWriter(removeDuplicates(JSON.parse(writer).rows));
         const rating = await retrieveAvgRating(dateRange, actorSearch);
         setAvgRating(formatData(JSON.parse(rating).rows));
+        const st = await retrieveStars(dateRange);
+        setStars(removeDuplicates(JSON.parse(st).rows));
         const aGenres1 = await retrieveRoleGenreActor(dateRange, actorSearch, "Comedy");
         const aGenres2 = await retrieveRoleGenreActor(dateRange, actorSearch, "Drama");
         const aGenres3 = await retrieveRoleGenreActor(dateRange, actorSearch, "Action");
@@ -313,17 +316,17 @@ const CastCrew = () => {
                         <TableContainer >
                             <Table>
                                 <TableBody>
-                                    {highestActor.map((actor) => (
+                                    {highestDirector.map((director) => (
                                         <TableRow
-                                        key={actor[0]}
+                                        key={director[0]}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                         >
                                             <TableCell component="th" scope="row">
-                                                {actor[0]}
+                                                {director[0]}
                                             </TableCell>
-                                            <TableCell align="right">{actor[1]}</TableCell>
+                                            <TableCell align="right">{director[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
-                                                {Math.round(actor[2], 1)}
+                                                {Math.round(director[2], 1)}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -343,17 +346,17 @@ const CastCrew = () => {
                         <TableContainer >
                             <Table>
                                 <TableBody>
-                                    {highestDirector.map((director) => (
+                                    {highestWriter.map((writer) => (
                                         <TableRow
-                                        key={director[0]}
+                                        key={writer[0]}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                         >
                                             <TableCell component="th" scope="row">
-                                                {director[0]}
+                                                {writer[0]}
                                             </TableCell>
-                                            <TableCell align="right">{director[1]}</TableCell>
+                                            <TableCell align="right">{writer[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.accent2.main}` }}>
-                                                {Math.round(director[2], 1)}
+                                                {Math.round(writer[2], 1)}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -366,24 +369,24 @@ const CastCrew = () => {
             <Grid item xs={3}>
                 <Card sx={{ height: '100%' }}>
                     <CardHeader
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
+                        title="Stars of the Best Movies"
+                        subheader="The star of the highest rated movie over time."
                     />
                     <CardContent>
                         <TableContainer >
                             <Table>
                                 <TableBody>
-                                    {highestWriter.map((writer) => (
+                                    {stars.map((star) => (
                                         <TableRow
-                                        key={writer[0]}
+                                        key={star[0]}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                         >
                                             <TableCell component="th" scope="row">
-                                                {writer[0]}
+                                                {star[0]}
                                             </TableCell>
-                                            <TableCell align="right">{writer[1]}</TableCell>
+                                            <TableCell align="right">{star[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.secondary.main}` }}>
-                                                {Math.round(writer[2], 1)}
+                                                {Math.round(star[2], 1)}
                                             </TableCell>
                                         </TableRow>
                                     ))}
