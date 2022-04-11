@@ -480,5 +480,25 @@ module.exports = (app, db) => {
             res.status(400).type('json').send(err);
         }
     });
+
+    app.get('/api/avg_rating_actors/:start/:end/:name', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT StartYear, ROUND(AVG(AverageRating), 2) AS Rating
+                FROM "LAUREN.NEWMAN".Person 
+                NATURAL JOIN "LAUREN.NEWMAN".Principal 
+                NATURAL JOIN "LAUREN.NEWMAN".Title 
+                NATURAL JOIN "LAUREN.NEWMAN".Rating
+                WHERE PrimaryName = '${req.params.name}'
+                AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                GROUP BY StartYear
+                ORDER BY StartYear ASC`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            console.log(err);
+            res.status(400).type('json').send(err);
+        }
+    });
 };
 

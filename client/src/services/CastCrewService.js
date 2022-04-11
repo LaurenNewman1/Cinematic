@@ -21,3 +21,8 @@ export const retrieveHighestWriter = async (dateRange) => {
     const result = await makeGetRequest(`/api/highest_writer/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
     return result;
 };
+
+export const retrieveAvgRating = async (dateRange, name) => {
+    const result = await makeGetRequest(`/api/avg_rating_actors/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}/${name}`);
+    return result;
+};

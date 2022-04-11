@@ -5,14 +5,26 @@ import { Grid, Typography, TextField, Box, Card, CardHeader,
 import { DatePicker } from '@mui/lab';
 import { subDays } from 'date-fns';
 // import from 'CastCrewService.js'
-import { retrieveTotalActors, retrieveHighestActor, retrieveHighestDirector, retrieveHighestWriter } from '../services/CastCrewService';
+import { retrieveTotalActors, retrieveHighestActor, retrieveHighestDirector, 
+    retrieveHighestWriter, retrieveAvgRating } from '../services/CastCrewService';
 import { useTheme } from '@emotion/react';
 import Loading from '../components/Loading.jsx';
+import { ArgumentAxis, ValueAxis, Chart, LineSeries, AreaSeries } from '@devexpress/dx-react-chart-material-ui';
+import {ValueScale, ArgumentScale} from '@devexpress/dx-react-chart';
+import { scaleBand } from '@devexpress/dx-chart-core';
 
 
 const CastCrew = () => {
 
     const theme = useTheme();
+
+    function formatData(data) {
+        let formatted = [];
+        data.forEach(d => {
+            formatted.push({x: d[0], y: Math.round(d[1], 2)});
+        });
+        return formatted;
+    }
 
     const removeDuplicates = (list) => {
         let years = [];
@@ -28,11 +40,14 @@ const CastCrew = () => {
     }
 
     const [dateRange, setDateRange] = useState([subDays(new Date(), 3650), new Date()]);
+    const [actorSearch, setActorSearch] = useState("Tom Hanks");
+    const [sendSearch, setSendSearch] = useState("Tom Hanks");
     const [totalActors , setTotalActors] = useState();
     const [loading, setLoading] = useState(false);
     const [highestActor, setHighestActor] = useState([]);
     const [highestDirector, setHighestDirector] = useState([]);
     const [highestWriter, setHighestWriter] = useState([]);
+    const [avgRating, setAvgRating] = useState([]);
 
     const fetchData = async () => {
         setLoading(true);
@@ -46,11 +61,12 @@ const CastCrew = () => {
         console.log(director);
         const writer = await retrieveHighestWriter(dateRange);
         setHighestWriter(removeDuplicates(JSON.parse(writer).rows));
-        console.log(writer);
+        const rating = await retrieveAvgRating(dateRange, actorSearch);
+        setAvgRating(formatData(JSON.parse(rating).rows));
         setLoading(false);
     }
 
-    useEffect(async () => fetchData(), [dateRange]);
+    useEffect(async () => fetchData(), [dateRange, sendSearch]);
 
     const changeDate = (newDate, fromto) => {
         if (fromto == "from")
@@ -113,21 +129,29 @@ const CastCrew = () => {
                     <CardHeader
                         action={
                             <FormControl sx={{ width: '100%' }}>
-                                <InputLabel>Button name</InputLabel>
-                                <Select label='Button name'>
-                                    {[].map((option) =>
-                                        <MenuItem>{option}</MenuItem>
-                                    )}
-                                </Select>
+                                <TextField
+                                    label="Enter Actor"
+                                    value={actorSearch}
+                                    onChange={(e) => setActorSearch(e.target.value)}
+                                    onKeyPress={(e) => { if (e.key === "Enter") { setSendSearch(e.target.value); }}}
+                                />
                             </FormControl>
                         }
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
+                        title="Average Rating Over Time"
+                        subheader="Average rating of total productions starred in."
                     />
-                    <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
+                    <CardContent sx={{ 
+                        paddingBottom: 0, paddingBottom: 0, paddingTop: 0,
+                        "&:last-child": {
+                        paddingBottom: 0
+                        }}}>
+                        <Chart data={avgRating} sx={{ maxHeight: 130 }}>
+                            <ArgumentScale factory={scaleBand} />
+                            <ArgumentAxis />
+                            <ValueScale factory={scaleBand}/>
+                            <ValueAxis showGrid={false}/>
+                            <AreaSeries valueField="y" argumentField="x" />
+                        </Chart>
                     </CardContent>
                 </Card>
             </Grid>
