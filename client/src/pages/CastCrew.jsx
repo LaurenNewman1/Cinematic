@@ -90,7 +90,7 @@ const CastCrew = () => {
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                     <Card
-                        style={{backgroundColor: '#44c2b4'}}>
+                        style={{backgroundColor: '#44c2b4', height: 100}}>
                             <CardHeader
                                 title={totalActors}
                                 subheader="Total actors and directors"
@@ -99,7 +99,7 @@ const CastCrew = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <Card
-                        style={{backgroundColor: '#f4738a'}}>
+                        style={{backgroundColor: '#f4738a', height: 100}}>
                             <CardHeader
                                 title="IMDb"
                                 subheader="primary data source"

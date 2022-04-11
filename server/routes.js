@@ -432,5 +432,53 @@ module.exports = (app, db) => {
             res.status(400).type('json').send(err);
         }
     });
+
+    app.get('/api/alt_language/:start/:end', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT StartYear, COUNT(*)
+                FROM "LAUREN.NEWMAN".Title
+                WHERE Tconst IN (
+                    SELECT TitleID AS Tconst
+                    FROM "LAUREN.NEWMAN".Alternative
+                )
+                AND Tconst NOT IN (
+                    SELECT ParentTconst AS Tconst
+                    FROM "LAUREN.NEWMAN".Episode
+                )
+                AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                GROUP BY StartYear
+                ORDER BY StartYear ASC`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            console.log(err);
+            res.status(400).type('json').send(err);
+        }
+    });
+
+    app.get('/api/alt_language_shows/:start/:end', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT StartYear, COUNT(*)
+                FROM "LAUREN.NEWMAN".Title
+                WHERE Tconst IN (
+                    SELECT TitleID AS Tconst
+                    FROM "LAUREN.NEWMAN".Alternative
+                )
+                AND Tconst IN (
+                    SELECT ParentTconst AS Tconst
+                    FROM "LAUREN.NEWMAN".Episode
+                )
+                AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                GROUP BY StartYear
+                ORDER BY StartYear ASC`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            console.log(err);
+            res.status(400).type('json').send(err);
+        }
+    });
 };
 
