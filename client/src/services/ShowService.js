@@ -1,5 +1,4 @@
 // Insert post, put, get, delete services here for shows
-import { SettingsApplications, SettingsSystemDaydreamTwoTone } from "@mui/icons-material";
 import {makeGetRequest} from "../services/service.js"
 
 export const retrieveTotalShows = async () => {
@@ -26,5 +25,15 @@ export const retrieveHighestRatedShows = async (dateRange) => {
 
 export const retrieveLowestRatedShows = async (dateRange) => {
     const result = await makeGetRequest(`/api/lowest_rated_shows/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
+    return result;
+};
+
+export const retrieveAvgRuntime = async (dateRange) => {
+    const result = await makeGetRequest(`/api/avg_runtime_shows/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
+    return result;
+};
+
+export const retrieveAvgRating = async (dateRange) => {
+    const result = await makeGetRequest(`/api/avg_rating_shows/${dateRange[0].getYear() + 1900}/${dateRange[1].getYear() + 1900}`);
     return result;
 };

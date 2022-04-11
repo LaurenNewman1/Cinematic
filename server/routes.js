@@ -248,5 +248,184 @@ module.exports = (app, db) => {
             res.status(400).type('json').send(err);
         }
     });
+
+    app.get('/api/avg_runtime/:start/:end', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT StartYear, ROUND(AVG(TO_NUMBER(cast(NULLIF(runtimeminutes, '\N') AS VARCHAR(26)))), 0) AS runtime
+                FROM "LAUREN.NEWMAN".Title
+                WHERE StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                AND Tconst NOT IN (
+                    SELECT ParentTconst AS Tconst
+                    FROM "LAUREN.NEWMAN".Episode
+                )
+                GROUP BY StartYear
+                ORDER BY StartYear ASC`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            console.log(err);
+            res.status(400).type('json').send(err);
+        }
+    });
+
+    app.get('/api/avg_runtime_shows/:start/:end', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT EndYear, EndYear - StartYear AS Length
+                FROM "LAUREN.NEWMAN".Title
+                WHERE StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                AND Tconst IN (
+                    SELECT ParentTconst AS Tconst
+                    FROM "LAUREN.NEWMAN".Episode
+                )
+                GROUP BY EndYear
+                ORDER BY EndYear ASC`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            console.log(err);
+            res.status(400).type('json').send(err);
+        }
+    });
+
+    app.get('/api/avg_rating/:start/:end', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT StartYear, ROUND(AVG(AverageRating), 2) AS Rating
+                FROM "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Rating
+                WHERE StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                AND Tconst NOT IN (
+                    SELECT ParentTconst AS Tconst
+                    FROM "LAUREN.NEWMAN".Episode
+                )
+                GROUP BY StartYear
+                ORDER BY StartYear ASC`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            console.log(err);
+            res.status(400).type('json').send(err);
+        }
+    });
+
+    app.get('/api/avg_rating_shows/:start/:end', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT StartYear, ROUND(AVG(AverageRating), 2) AS Rating
+                FROM "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Rating
+                WHERE StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                AND Tconst IN (
+                    SELECT ParentTconst AS Tconst
+                    FROM "LAUREN.NEWMAN".Episode
+                )
+                GROUP BY StartYear
+                ORDER BY StartYear ASC`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            console.log(err);
+            res.status(400).type('json').send(err);
+        }
+    });
+
+    app.get('/api/highest_actor/:start/:end', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT StartYear, Nconst, tot
+                FROM (
+                    SELECT *
+                    FROM (
+                        SELECT StartYear, MAX(tot) AS tot
+                        FROM (
+                            SELECT COUNT(Tconst) AS tot, StartYear, Nconst
+                            FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title
+                            WHERE Category = 'actor' OR Category = 'actress'
+                            GROUP BY Nconst, StartYear
+                        )
+                        GROUP BY StartYear
+                    )
+                    NATURAL JOIN (
+                        SELECT COUNT(Tconst) AS tot, StartYear, Nconst
+                        FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title
+                        WHERE Category = 'actor' OR Category = 'actress'
+                        GROUP BY Nconst, StartYear
+                    )
+                )
+                WHERE StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                ORDER BY StartYear ASC`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            console.log(err);
+            res.status(400).type('json').send(err);
+        }
+    });
+
+    app.get('/api/highest_director/:start/:end', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT StartYear, Nconst, tot
+                FROM (
+                    SELECT *
+                    FROM (
+                        SELECT StartYear, MAX(tot) AS tot
+                        FROM (
+                            SELECT COUNT(Tconst) AS tot, StartYear, Nconst
+                            FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title
+                            WHERE Category = 'director'
+                            GROUP BY Nconst, StartYear
+                        )
+                        GROUP BY StartYear
+                    )
+                    NATURAL JOIN (
+                        SELECT COUNT(Tconst) AS tot, StartYear, Nconst
+                        FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title
+                        WHERE Category = 'director'
+                        GROUP BY Nconst, StartYear
+                    )
+                )
+                WHERE StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                ORDER BY StartYear ASC`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            console.log(err);
+            res.status(400).type('json').send(err);
+        }
+    });
+
+    app.get('/api/highest_writer/:start/:end', async(req, res) => {
+        try {
+            const data = await db.execute(
+                `SELECT StartYear, Nconst, tot
+                FROM (
+                    SELECT *
+                    FROM (
+                        SELECT StartYear, MAX(tot) AS tot
+                        FROM (
+                            SELECT COUNT(Tconst) AS tot, StartYear, Nconst
+                            FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title
+                            WHERE Category = 'writer'
+                            GROUP BY Nconst, StartYear
+                        )
+                        GROUP BY StartYear
+                    )
+                    NATURAL JOIN (
+                        SELECT COUNT(Tconst) AS tot, StartYear, Nconst
+                        FROM "LAUREN.NEWMAN".Principal NATURAL JOIN "LAUREN.NEWMAN".Title
+                        WHERE Category = 'writer'
+                        GROUP BY Nconst, StartYear
+                    )
+                )
+                WHERE StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                ORDER BY StartYear ASC`,
+            );
+            res.status(200).type('json').send(data);
+        } catch (err) {
+            console.log(err);
+            res.status(400).type('json').send(err);
+        }
+    });
 };
 

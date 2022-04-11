@@ -7,9 +7,11 @@ import LocalMoviesOutlinedIcon from '@mui/icons-material/LocalMoviesOutlined';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import {retrieveHighestRatedMovies, retrieveLongestMovies,retrieveShortestMovies, retrieveLowestRatedMovies, retrieveTotalMovies} from "../services/MovieService.js";
+import {retrieveAvgRuntime, retrieveHighestRatedMovies, retrieveShortestMovies, retrieveLongestMovies, retrieveLowestRatedMovies, retrieveTotalMovies} from "../services/MovieService.js";
 import Loading from '../components/Loading.jsx';
 import { useTheme } from '@emotion/react';
+import { retrieveAvgRating } from '../services/ShowService.js';
+import { ArgumentAxis, ValueAxis, Chart, LineSeries} from '@devexpress/dx-react-chart-material-ui';
 
 function createData(year, movie_title, minutes) {
     return { year, movie_title, minutes};
@@ -24,8 +26,18 @@ const Movies = () => {
     const [shortestMovies, setShortestMovies] = useState([]);
     const [bestMovies, setBestMovies] = useState([]);
     const [worstMovies, setWorstMovies] = useState([]);
+    const [avgRuntimes, setAvgRuntimes] = useState([]);
+    const [avgRating, setAvgRating] = useState([]);
     const [loading, setLoading] = useState(false);
     const theme = useTheme();
+
+    function formatData(data) {
+        let formatted = [];
+        data.forEach(d => {
+            formatted.push({x: d[0], y: d[1]});
+        });
+        return formatted;
+    }
 
     const removeDuplicates = (list) => {
         let years = [];
@@ -52,6 +64,11 @@ const Movies = () => {
         setBestMovies(removeDuplicates(JSON.parse(best).rows));
         const worst = await retrieveLowestRatedMovies(dateRange);
         setWorstMovies(removeDuplicates(JSON.parse(worst).rows));
+        const runtime = await retrieveAvgRuntime(dateRange);
+        setAvgRuntimes(JSON.parse(runtime).rows);
+        const rating = await retrieveAvgRating(dateRange);
+        setAvgRating(formatData(JSON.parse(rating).rows));
+        console.log(rating);
         setLoading(false);
     }
 
@@ -163,23 +180,15 @@ const Movies = () => {
             <Grid item xs={6}>
                 <Card sx={{ height: '100%' }}>
                     <CardHeader
-                        action={
-                            <FormControl sx={{ width: '100%' }}>
-                                <InputLabel>Button name</InputLabel>
-                                <Select label='Button name'>
-                                    {[].map((option) =>
-                                        <MenuItem>{option}</MenuItem>
-                                    )}
-                                </Select>
-                            </FormControl>
-                        }
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
+                        title="Average Rating by Year"
+                        subheader="An analysis of rating trends over time (out of 10)"
                     />
                     <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
+                        <Chart data={avgRating}>
+                            <ArgumentAxis />
+                            <ValueAxis />
+                            <LineSeries valueField="y" argumentField="x" />
+                        </Chart>
                     </CardContent>
                 </Card>
             </Grid>
