@@ -63,7 +63,7 @@ const Movies = () => {
     const fetchData = async () => {
         setLoading(true);
         const tot = await retrieveTotalMovies();
-        setTotalMovies(tot.match('[0-9]+'));
+        setTotalMovies(tot.match('[0-9]+').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
         const longest = await retrieveLongestMovies(dateRange);
         setLongestMovies(removeDuplicates(JSON.parse(longest).rows))
         const shortest = await retrieveShortestMovies(dateRange);
@@ -155,12 +155,14 @@ const Movies = () => {
                         "&:last-child": {
                         paddingBottom: 0
                         }}}>
+                        {altLang.length ?
                         <Chart data={altLang} sx={{ maxHeight: 130 }}>
                             <ArgumentScale factory={scale} />
                             <ArgumentAxis tickInterval={2}/>
                             <ValueAxis showGrid={false} />
                             <AreaSeries valueField="y" argumentField="x" />
                         </Chart>
+                        : <Typography>No results found.</Typography>}
                     </CardContent>
                 </Card>
             </Grid>
@@ -175,12 +177,14 @@ const Movies = () => {
                         "&:last-child": {
                         paddingBottom: 0
                         }}}>
+                        {avgRuntimes.length ?
                         <Chart data={avgRuntimes} sx={{ maxHeight: 350 }}>
                             <ArgumentAxis />
                             <ArgumentScale factory={scaleBand} />
                             <ValueAxis />
                             <LineSeries valueField="y" argumentField="x" />
                         </Chart>
+                        : <Typography>No results found.</Typography>}
                     </CardContent>
                 </Card>
             </Grid>
@@ -195,12 +199,14 @@ const Movies = () => {
                         "&:last-child": {
                         paddingBottom: 0
                         }}}>
+                        {avgRating.length ?
                         <Chart data={avgRating} sx={{ maxHeight: 350 }}>
                             <ArgumentAxis />
                             <ArgumentScale factory={scaleBand} />
                             <ValueAxis />
                             <LineSeries valueField="y" argumentField="x" />
                         </Chart>
+                        : <Typography>No results found.</Typography>}
                     </CardContent>
                 </Card>
             </Grid>
@@ -214,7 +220,8 @@ const Movies = () => {
                         <TableContainer >
                             <Table>
                                 <TableBody>
-                                    {bestMovies.map((movie) => (
+                                    {bestMovies.length ?
+                                    bestMovies.map((movie) => (
                                         <TableRow
                                         key={movie[0]}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -227,7 +234,7 @@ const Movies = () => {
                                                 {Math.round(movie[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
-                                    ))}
+                                    )) : <Typography>No results found.</Typography>}
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -244,7 +251,8 @@ const Movies = () => {
                         <TableContainer >
                             <Table>
                                 <TableBody>
-                                    {worstMovies.map((movie) => (
+                                    {worstMovies.length ?
+                                    worstMovies.map((movie) => (
                                         <TableRow
                                         key={movie[0]}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -257,7 +265,7 @@ const Movies = () => {
                                                 {Math.round(movie[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
-                                    ))}
+                                    )) : <Typography>No results found.</Typography>}
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -275,7 +283,8 @@ const Movies = () => {
                            <TableContainer >
                                <Table>
                                    <TableBody>
-                                    {longestMovies.map((movie) => (
+                                    {longestMovies.length ?
+                                    longestMovies.map((movie) => (
                                             <TableRow
                                             key={movie[0]}
                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -288,7 +297,7 @@ const Movies = () => {
                                                 {Math.round(movie[2] * 100) / 100}
                                             </TableCell>
                                             </TableRow>
-                                        ))}
+                                        )) : <Typography>No results found.</Typography>}
                                </TableBody>
                                </Table>
                            </TableContainer>
@@ -307,7 +316,8 @@ const Movies = () => {
                         <TableContainer >
                                <Table>
                                    <TableBody>
-                                    {shortestMovies.map((movie) => (
+                                    {shortestMovies ?
+                                    shortestMovies.map((movie) => (
                                             <TableRow
                                             key={movie[0]}
                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -320,7 +330,7 @@ const Movies = () => {
                                                 {Math.round(movie[2] * 100) / 100}
                                             </TableCell>
                                             </TableRow>
-                                        ))}
+                                        )) : <Typography>No results found.</Typography>}
                                </TableBody>
                                </Table>
                            </TableContainer>

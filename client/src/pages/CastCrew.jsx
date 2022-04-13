@@ -31,14 +31,17 @@ const CastCrew = () => {
 
     function getCol(matrix){
         var column = [];
-        for(var i=0; i<matrix.length; i++){
-           column.push(matrix[i][0]);
-        }
+        if (matrix)
+            for(var i=0; i<matrix.length; i++){
+            column.push(matrix[i][0]);
+            }
         return column;
      }
 
     function formatBarChart(data1, data2, data3) {
         let formatted = [];
+        if (data1 && !data1.length && !data2.length && !data3.length)
+            return formatted;
         const start = dateRange[0].getYear() + 1900;
         const end = dateRange[1].getYear() + 1900;
         for (var d = start; d <= end; d++) {
@@ -88,22 +91,12 @@ const CastCrew = () => {
     const fetchData = async () => {
         setLoading(true);
         const total = await retrieveTotalActors();
-        setTotalActors(total.match('[0-9]+'));
-        const actor = await retrieveHighestActor(dateRange);
-        setHighestActor(removeDuplicates(JSON.parse(actor).rows));
-        console.log(actor);
-        const director = await retrieveHighestDirector(dateRange);
-        setHighestDirector(removeDuplicates(JSON.parse(director).rows));
-        console.log(director);
-        const writer = await retrieveHighestWriter(dateRange);
-        setHighestWriter(removeDuplicates(JSON.parse(writer).rows));
+        setTotalActors(total.match('[0-9]+').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
         const rating = await retrieveAvgRating(dateRange, actorSearch);
         setAvgRating(formatData(JSON.parse(rating).rows));
-        const st = await retrieveStars(dateRange);
-        setStars(removeDuplicates(JSON.parse(st).rows));
-        const aGenres1 = await retrieveRoleGenreActor(dateRange, actorSearch, "Comedy");
-        const aGenres2 = await retrieveRoleGenreActor(dateRange, actorSearch, "Drama");
-        const aGenres3 = await retrieveRoleGenreActor(dateRange, actorSearch, "Action");
+        const aGenres1 = await retrieveRoleGenreActor(dateRange, actorSearch2, "Comedy");
+        const aGenres2 = await retrieveRoleGenreActor(dateRange, actorSearch2, "Drama");
+        const aGenres3 = await retrieveRoleGenreActor(dateRange, actorSearch2, "Action");
         setActorGenres(
             formatBarChart(JSON.parse(aGenres1).rows, JSON.parse(aGenres2).rows, JSON.parse(aGenres3).rows)
         );
@@ -113,10 +106,47 @@ const CastCrew = () => {
         setDirectorGenres(
             formatBarChart(JSON.parse(dGenres1).rows, JSON.parse(dGenres2).rows, JSON.parse(dGenres3).rows)
         );
+        const actor = await retrieveHighestActor(dateRange);
+        setHighestActor(removeDuplicates(JSON.parse(actor).rows));
+        const director = await retrieveHighestDirector(dateRange);
+        setHighestDirector(removeDuplicates(JSON.parse(director).rows));
+        const writer = await retrieveHighestWriter(dateRange);
+        setHighestWriter(removeDuplicates(JSON.parse(writer).rows));
+        const st = await retrieveStars(dateRange);
+        setStars(removeDuplicates(JSON.parse(st).rows));
         setLoading(false);
     }
 
-    useEffect(async () => fetchData(), [dateRange, sendSearch, sendSearch2, sendDirectorSearch]);
+    useEffect(async () => fetchData(), [dateRange]);
+
+    useEffect(async () => {
+        setLoading(true);
+        const rating = await retrieveAvgRating(dateRange, actorSearch);
+        setAvgRating(formatData(JSON.parse(rating).rows));
+        setLoading(false);
+    }, [sendSearch])
+
+    useEffect(async () => {
+        setLoading(true);
+        const aGenres1 = await retrieveRoleGenreActor(dateRange, actorSearch2, "Comedy");
+        const aGenres2 = await retrieveRoleGenreActor(dateRange, actorSearch2, "Drama");
+        const aGenres3 = await retrieveRoleGenreActor(dateRange, actorSearch2, "Action");
+        setActorGenres(
+            formatBarChart(JSON.parse(aGenres1).rows, JSON.parse(aGenres2).rows, JSON.parse(aGenres3).rows)
+        );
+        setLoading(false);
+    }, [sendSearch2])
+
+    useEffect(async () => {
+        setLoading(true);
+        const dGenres1 = await retrieveRoleGenreDirector(dateRange, directorSearch, "Comedy");
+        const dGenres2 = await retrieveRoleGenreDirector(dateRange, directorSearch, "Drama");
+        const dGenres3 = await retrieveRoleGenreDirector(dateRange, directorSearch, "Action");
+        setDirectorGenres(
+            formatBarChart(JSON.parse(dGenres1).rows, JSON.parse(dGenres2).rows, JSON.parse(dGenres3).rows)
+        );
+        setLoading(false);
+    }, [sendDirectorSearch])
 
     const changeDate = (newDate, fromto) => {
         if (fromto == "from")
@@ -187,7 +217,12 @@ const CastCrew = () => {
                                     label="Enter Actor"
                                     value={actorSearch}
                                     onChange={(e) => setActorSearch(e.target.value)}
-                                    onKeyPress={(e) => { if (e.key === "Enter") { setSendSearch(e.target.value); }}}
+                                    onKeyPress={(e) => { 
+                                        if (e.key === "Enter") { 
+                                            setSendSearch(e.target.value);
+                                            document.activeElement.blur();
+                                        }
+                                    }}
                                 />
                             </FormControl>
                         }
@@ -199,12 +234,14 @@ const CastCrew = () => {
                         "&:last-child": {
                         paddingBottom: 0
                         }}}>
+                        {avgRating.length ?
                         <Chart data={avgRating} sx={{ maxHeight: 130 }}>
                             <ArgumentScale factory={scaleBand} />
                             <ArgumentAxis />
                             <ValueAxis showGrid={false}/>
                             <AreaSeries valueField="y" argumentField="x" />
                         </Chart>
+                        : <Typography>No results found.</Typography>}
                     </CardContent>
                 </Card>
             </Grid>
@@ -219,7 +256,12 @@ const CastCrew = () => {
                                     label="Enter Actor"
                                     value={actorSearch2}
                                     onChange={(e) => setActorSearch2(e.target.value)}
-                                    onKeyPress={(e) => { if (e.key === "Enter") { setSendSearch2(e.target.value); }}}
+                                    onKeyPress={(e) => { 
+                                        if (e.key === "Enter") {
+                                            setSendSearch2(e.target.value); 
+                                            document.activeElement.blur();
+                                        }
+                                    }}
                                 />
                             </FormControl>
                         }
@@ -229,6 +271,7 @@ const CastCrew = () => {
                         "&:last-child": {
                         paddingBottom: 0
                         }}}>
+                        {actorGenres.length ?
                         <Chart data={actorGenres} sx={{ maxHeight: 350 }}>
                             <Palette scheme={scheme} />
                             <ArgumentScale factory={scaleBand} />
@@ -240,6 +283,7 @@ const CastCrew = () => {
                             <Legend position='bottom' sx={{ maxHeight: 50}}/>
                             <Stack />
                         </Chart>
+                        : <Typography>No results found.</Typography>}
                     </CardContent>
                 </Card>
             </Grid>
@@ -252,7 +296,12 @@ const CastCrew = () => {
                                     label="Enter Director"
                                     value={directorSearch}
                                     onChange={(e) => setDirectorSearch(e.target.value)}
-                                    onKeyPress={(e) => { if (e.key === "Enter") { setSendDirectorSearch(e.target.value); }}}
+                                    onKeyPress={(e) => { 
+                                        if (e.key === "Enter") {
+                                            setSendDirectorSearch(e.target.value); 
+                                            document.activeElement.blur();
+                                        }
+                                    }}
                                 />
                             </FormControl>
                         }
@@ -264,6 +313,7 @@ const CastCrew = () => {
                         "&:last-child": {
                         paddingBottom: 0
                         }}}>
+                        {directorGenres.length ?
                         <Chart data={directorGenres} sx={{ maxHeight: 350 }}>
                             <Palette scheme={scheme} />
                             <ArgumentScale factory={scaleBand} />
@@ -275,6 +325,7 @@ const CastCrew = () => {
                             <Legend position='bottom' sx={{ maxHeight: 50}}/>
                             <Stack />
                         </Chart>
+                        : <Typography>No results found.</Typography>}
                     </CardContent>
                 </Card>
             </Grid>
@@ -288,7 +339,8 @@ const CastCrew = () => {
                         <TableContainer >
                             <Table>
                                 <TableBody>
-                                    {highestActor.map((actor) => (
+                                    {highestActor.length ?
+                                    highestActor.map((actor) => (
                                         <TableRow
                                         key={actor[0]}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -301,7 +353,7 @@ const CastCrew = () => {
                                                 {Math.round(actor[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
-                                    ))}
+                                    )) : <Typography>No results found.</Typography>}
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -318,7 +370,8 @@ const CastCrew = () => {
                         <TableContainer >
                             <Table>
                                 <TableBody>
-                                    {highestDirector.map((director) => (
+                                    {highestDirector.length ?
+                                    highestDirector.map((director) => (
                                         <TableRow
                                         key={director[0]}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -331,7 +384,7 @@ const CastCrew = () => {
                                                 {Math.round(director[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
-                                    ))}
+                                    )) : <Typography>No results found.</Typography>}
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -348,7 +401,8 @@ const CastCrew = () => {
                         <TableContainer >
                             <Table>
                                 <TableBody>
-                                    {highestWriter.map((writer) => (
+                                    {highestWriter.length ?
+                                    highestWriter.map((writer) => (
                                         <TableRow
                                         key={writer[0]}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -361,7 +415,7 @@ const CastCrew = () => {
                                                 {Math.round(writer[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
-                                    ))}
+                                    )) : <Typography>No results found.</Typography>}
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -378,7 +432,8 @@ const CastCrew = () => {
                         <TableContainer >
                             <Table>
                                 <TableBody>
-                                    {stars.map((star) => (
+                                    {stars.length ?
+                                    stars.map((star) => (
                                         <TableRow
                                         key={star[0]}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -391,7 +446,7 @@ const CastCrew = () => {
                                                 {Math.round(star[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
-                                    ))}
+                                    )) : <Typography>No results found.</Typography>}
                                 </TableBody>
                             </Table>
                         </TableContainer>

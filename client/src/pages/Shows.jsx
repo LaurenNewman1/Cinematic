@@ -63,7 +63,7 @@ const Shows = () => {
     const fetchData = async () => {
         setLoading(true);
         const tot = await retrieveTotalShows();
-        setTotalShows(tot.match('[0-9]+'));
+        setTotalShows(tot.match('[0-9]+').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
         const best = await retrieveHighestRatedShows(dateRange);
         setBestShows(removeDuplicates(JSON.parse(best).rows));
         console.log(best)
@@ -155,6 +155,7 @@ const Shows = () => {
                         "&:last-child": {
                         paddingBottom: 0
                         }}}>
+                        {altLang.length ?
                         <Chart data={altLang} sx={{ maxHeight: 130 }}>
                             <Palette scheme={scheme} />
                             <ArgumentScale factory={scaleBand} />
@@ -162,6 +163,7 @@ const Shows = () => {
                             <ValueAxis showGrid={false} sx={{color: `${theme.palette.accent2.main}`}}/>
                             <AreaSeries valueField="y" argumentField="x" />
                         </Chart>
+                        : <Typography>No results found.</Typography>}
                     </CardContent>
                 </Card>
             </Grid>
@@ -176,12 +178,14 @@ const Shows = () => {
                         "&:last-child": {
                         paddingBottom: 0
                         }}}>
+                        {avgRuntimes.length ?
                         <Chart data={avgRuntimes} sx={{ maxHeight: 350 }}>
                             <ArgumentAxis />
                             <ArgumentScale factory={scaleBand} />
                             <ValueAxis />
                             <LineSeries valueField="y" argumentField="x" />
                         </Chart>
+                        : <Typography>No results found.</Typography>}
                     </CardContent>
                 </Card>
             </Grid>
@@ -196,12 +200,14 @@ const Shows = () => {
                         "&:last-child": {
                         paddingBottom: 0
                         }}}>
+                        {avgRating.length ?
                         <Chart data={avgRating} sx={{ maxHeight: 350 }}>
                             <ArgumentAxis />
                             <ArgumentScale factory={scaleBand} />
                             <ValueAxis />
                             <LineSeries valueField="y" argumentField="x" />
                         </Chart>
+                        : <Typography>No results found.</Typography>}
                     </CardContent>
                 </Card>
             </Grid>
@@ -215,7 +221,8 @@ const Shows = () => {
                         <TableContainer >
                             <Table>
                                 <TableBody>
-                                    {bestShows.map((show) => (
+                                    {bestShows.length ?
+                                    bestShows.map((show) => (
                                         <TableRow
                                         key={show[0]}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -228,7 +235,7 @@ const Shows = () => {
                                                 {Math.round(show[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
-                                    ))}
+                                    )) : <Typography>No results found.</Typography>}
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -245,7 +252,8 @@ const Shows = () => {
                         <TableContainer >
                             <Table>
                                 <TableBody>
-                                    {worstShows.map((show) => (
+                                    {worstShows.length ?
+                                    worstShows.map((show) => (
                                         <TableRow
                                         key={show[0]}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -258,7 +266,7 @@ const Shows = () => {
                                                 {Math.round(show[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
-                                    ))}
+                                    )) : <Typography>No results found.</Typography>}
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -276,7 +284,8 @@ const Shows = () => {
                         <TableContainer >
                                <Table>
                                    <TableBody>
-                                    {shortestShows.map((show) => (
+                                    {longestShows.length ?
+                                    longestShows.map((show) => (
                                             <TableRow
                                             key={show[0]}
                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -289,7 +298,7 @@ const Shows = () => {
                                                 {Math.round(show[2] * 100) / 100}
                                             </TableCell>
                                             </TableRow>
-                                        ))}
+                                        )) : <Typography>No results found.</Typography>}
                                </TableBody>
                                </Table>
                            </TableContainer>
@@ -308,7 +317,8 @@ const Shows = () => {
                         <TableContainer >
                                <Table>
                                    <TableBody>
-                                    {shortestShows.map((show) => (
+                                    {shortestShows.length ?
+                                    shortestShows.map((show) => (
                                             <TableRow
                                             key={show[0]}
                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -321,7 +331,7 @@ const Shows = () => {
                                                 {Math.round(show[2] * 100) / 100}
                                             </TableCell>
                                             </TableRow>
-                                        ))}
+                                        )) : <Typography>No results found.</Typography>}
                                </TableBody>
                                </Table>
                            </TableContainer>
