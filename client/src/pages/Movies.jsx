@@ -12,7 +12,7 @@ import {retrieveAvgRuntime, retrieveHighestRatedMovies, retrieveShortestMovies, 
 import Loading from '../components/Loading.jsx';
 import { useTheme } from '@emotion/react';
 import { ArgumentAxis, ValueAxis, Chart, LineSeries, AreaSeries } from '@devexpress/dx-react-chart-material-ui';
-import {ValueScale, ArgumentScale} from '@devexpress/dx-react-chart';
+import {ValueScale, ArgumentScale, ScaleObject} from '@devexpress/dx-react-chart';
 import { scaleBand } from '@devexpress/dx-chart-core';
 
 function createData(year, movie_title, minutes) {
@@ -33,6 +33,10 @@ const Movies = () => {
     const [altLang, setAltLang] = useState([]);
     const [loading, setLoading] = useState(false);
     const theme = useTheme();
+
+    const scale = () => {
+        return scaleBand().paddingInner(100)
+    };
 
     function formatData(data) {
         let formatted = [];
@@ -153,9 +157,9 @@ const Movies = () => {
                         paddingBottom: 0
                         }}}>
                         <Chart data={altLang} sx={{ maxHeight: 130 }}>
-                            <ArgumentScale factory={scaleBand} />
-                            <ArgumentAxis />
-                            <ValueAxis showGrid={false}/>
+                            <ArgumentScale factory={scale} />
+                            <ArgumentAxis tickInterval={2}/>
+                            <ValueAxis showGrid={false} />
                             <AreaSeries valueField="y" argumentField="x" />
                         </Chart>
                     </CardContent>

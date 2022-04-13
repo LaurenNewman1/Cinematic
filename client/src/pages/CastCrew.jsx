@@ -298,7 +298,7 @@ const CastCrew = () => {
                                             </TableCell>
                                             <TableCell align="right">{actor[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.primary.main}` }}>
-                                                {actor[2]}
+                                                {Math.round(actor[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -328,7 +328,7 @@ const CastCrew = () => {
                                             </TableCell>
                                             <TableCell align="right">{director[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
-                                                {director[2]}
+                                                {Math.round(director[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -358,7 +358,7 @@ const CastCrew = () => {
                                             </TableCell>
                                             <TableCell align="right">{writer[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.accent2.main}` }}>
-                                                {writer[2]}
+                                                {Math.round(writer[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -388,7 +388,7 @@ const CastCrew = () => {
                                             </TableCell>
                                             <TableCell align="right">{star[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.secondary.main}` }}>
-                                                {star[2]}
+                                                {Math.round(star[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
                                     ))}
