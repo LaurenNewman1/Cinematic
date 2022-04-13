@@ -36,9 +36,10 @@ const Movies = () => {
 
     function formatData(data) {
         let formatted = [];
-        data.forEach(d => {
-            formatted.push({x: d[0], y: d[1]});
-        });
+        if (data)
+            data.forEach(d => {
+                formatted.push({x: d[0], y: d[1]});
+            });
         return formatted;
     }
 
@@ -64,15 +65,14 @@ const Movies = () => {
         //setLongestMovies(removeDuplicates(JSON.parse(longest).rows))
         //const shortest = await retrieveShortestMovies(dateRange);
         //setShortestMovies(removeDuplicates(JSON.parse(shortest).rows));
-        // const best = await retrieveHighestRatedMovies(dateRange);
-        // setBestMovies(removeDuplicates(JSON.parse(best).rows));
-        // const worst = await retrieveLowestRatedMovies(dateRange);
-        // setWorstMovies(removeDuplicates(JSON.parse(worst).rows));
+        const best = await retrieveHighestRatedMovies(dateRange);
+        setBestMovies(removeDuplicates(JSON.parse(best).rows));
+        const worst = await retrieveLowestRatedMovies(dateRange);
+        setWorstMovies(removeDuplicates(JSON.parse(worst).rows));
         const runtime = await retrieveAvgRuntime(dateRange);
         setAvgRuntimes(formatData(JSON.parse(runtime).rows));
         const rating = await retrieveAvgRating(dateRange);
         setAvgRating(formatData(JSON.parse(rating).rows));
-        console.log(avgRating)
         const lang = await retrieveAltLang(dateRange);
         setAltLang(formatData(JSON.parse(lang).rows));
         setLoading(false);
@@ -221,7 +221,7 @@ const Movies = () => {
                                             </TableCell>
                                             <TableCell align="right">{movie[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.primary.main}` }}>
-                                                {Math.round(movie[2], 1)}
+                                                {Math.round(movie[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -251,7 +251,7 @@ const Movies = () => {
                                             </TableCell>
                                             <TableCell align="right">{movie[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
-                                                {Math.round(movie[2], 1)}
+                                                {Math.round(movie[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -282,7 +282,7 @@ const Movies = () => {
                                             </TableCell>
                                             <TableCell align="right">{movie[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.accent2.main}` }}>
-                                                {Math.round(movie[2], 1)}
+                                                {Math.round(movie[2] * 100) / 100}
                                             </TableCell>
                                             </TableRow>
                                         ))}
@@ -314,7 +314,7 @@ const Movies = () => {
                                             </TableCell>
                                             <TableCell align="right">{movie[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.secondary.main}` }}>
-                                                {Math.round(movie[2], 1)}
+                                                {Math.round(movie[2] * 100) / 100}
                                             </TableCell>
                                             </TableRow>
                                         ))}

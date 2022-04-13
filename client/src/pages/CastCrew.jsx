@@ -22,9 +22,10 @@ const CastCrew = () => {
 
     function formatData(data) {
         let formatted = [];
-        data.forEach(d => {
-            formatted.push({x: d[0], y: Math.round(d[1], 2)});
-        });
+        if (data)
+            data.forEach(d => {
+                formatted.push({x: d[0], y: d[1]});
+            });
         return formatted;
     }
 
@@ -297,7 +298,7 @@ const CastCrew = () => {
                                             </TableCell>
                                             <TableCell align="right">{actor[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.primary.main}` }}>
-                                                {Math.round(actor[2], 1)}
+                                                {actor[2]}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -327,7 +328,7 @@ const CastCrew = () => {
                                             </TableCell>
                                             <TableCell align="right">{director[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
-                                                {Math.round(director[2], 1)}
+                                                {director[2]}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -357,7 +358,7 @@ const CastCrew = () => {
                                             </TableCell>
                                             <TableCell align="right">{writer[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.accent2.main}` }}>
-                                                {Math.round(writer[2], 1)}
+                                                {writer[2]}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -387,7 +388,7 @@ const CastCrew = () => {
                                             </TableCell>
                                             <TableCell align="right">{star[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.secondary.main}` }}>
-                                                {Math.round(star[2], 1)}
+                                                {star[2]}
                                             </TableCell>
                                         </TableRow>
                                     ))}

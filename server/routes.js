@@ -137,7 +137,7 @@ module.exports = (app, db) => {
     app.get('/api/highest_rated_movies/:start/:end', async(req, res) => {
         try {
             const data = await db.execute(
-                `SELECT StartYear, Title, Rating
+                `SELECT StartYear, TitleName, Rating
                 FROM "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Ratings
                 WHERE (StartYear, Rating) IN (
                     SELECT StartYear, MAX(Rating) AS Rating
@@ -157,7 +157,7 @@ module.exports = (app, db) => {
     app.get('/api/lowest_rated_movies/:start/:end', async(req, res) => {
         try {
             const data = await db.execute(
-                `SELECT StartYear, Title, Rating
+                `SELECT StartYear, TitleName, Rating
                 FROM "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Ratings
                 WHERE (StartYear, Rating) IN (
                     SELECT StartYear, MIN(Rating) AS Rating
@@ -177,7 +177,7 @@ module.exports = (app, db) => {
     app.get('/api/highest_rated_shows/:start/:end', async(req, res) => {
         try {
             const data = await db.execute(
-                `SELECT StartYear, Title, Rating
+                `SELECT StartYear, TitleName, Rating
                 FROM "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Ratings
                 WHERE (StartYear, Rating) IN (
                     SELECT StartYear, MAX(Rating) AS Rating
@@ -197,7 +197,7 @@ module.exports = (app, db) => {
     app.get('/api/lowest_rated_shows/:start/:end', async(req, res) => {
         try {
             const data = await db.execute(
-                `SELECT StartYear, Title, Rating
+                `SELECT StartYear, TitleName, Rating
                 FROM "LAUREN.NEWMAN".Title NATURAL JOIN "LAUREN.NEWMAN".Ratings
                 WHERE (StartYear, Rating) IN (
                     SELECT StartYear, MIN(Rating) AS Rating
@@ -247,12 +247,12 @@ module.exports = (app, db) => {
     app.get('/api/avg_runtime_shows/:start/:end', async(req, res) => {
         try {
             const data = await db.execute(
-                `SELECT EndYear, AVG(EndYear - StartYear) AS Length
+                `SELECT StartYear, ROUND(AVG(Runtime), 2)
                 FROM "LAUREN.NEWMAN".Title
                 WHERE StartYear BETWEEN ${req.params.start} AND ${req.params.end}
                 AND Type = 'tvSeries'
-                GROUP BY EndYear
-                ORDER BY EndYear ASC`,
+                GROUP BY StartYear
+                ORDER BY StartYear ASC`,
             );
             res.status(200).type('json').send(data);
         } catch (err) {
@@ -486,7 +486,6 @@ module.exports = (app, db) => {
                 WHERE Name = '${req.params.name}'
                 AND Genres LIKE '%${req.params.genre}%'
                 AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
-                AND PrimaryProfession LIKE '%direct%'
                 GROUP BY StartYear`,
             );
             res.status(200).type('json').send(data);

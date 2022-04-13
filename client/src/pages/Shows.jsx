@@ -12,7 +12,7 @@ import {retrieveTotalShows, retrieveHighestRatedShows, retrieveLowestRatedShows,
 import Loading from '../components/Loading.jsx';
 import { useTheme } from '@emotion/react';
 import { ArgumentAxis, ValueAxis, Chart, LineSeries, AreaSeries} from '@devexpress/dx-react-chart-material-ui';
-import {ValueScale, ArgumentScale, Palette} from '@devexpress/dx-react-chart';
+import {ValueScale, ArgumentScale, Palette, Label} from '@devexpress/dx-react-chart';
 import { scaleBand } from '@devexpress/dx-chart-core';
 
 function createData(year, movie_title, minutes) {
@@ -53,9 +53,10 @@ const Shows = () => {
 
     function formatData(data) {
         let formatted = [];
-        data.forEach(d => {
-            formatted.push({x: d[0], y: d[1]});
-        });
+        if (data)
+            data.forEach(d => {
+                formatted.push({x: d[0], y: d[1]});
+            });
         return formatted;
     }
 
@@ -65,6 +66,7 @@ const Shows = () => {
         setTotalShows(tot.match('[0-9]+'));
         const best = await retrieveHighestRatedShows(dateRange);
         setBestShows(removeDuplicates(JSON.parse(best).rows));
+        console.log(best)
         const worst = await retrieveLowestRatedShows(dateRange);
         setWorstShows(removeDuplicates(JSON.parse(worst).rows));
         // TODO
@@ -73,7 +75,7 @@ const Shows = () => {
         //const shortest = await retrieveShortestShows(dateRange);
         //setShortestShows(removeDuplicates(JSON.parse(shortest).rows));
         const runtime = await retrieveAvgRuntime(dateRange);
-        setAvgRuntimes(JSON.parse(runtime).rows);
+        setAvgRuntimes(formatData(JSON.parse(runtime).rows));
         const rating = await retrieveAvgRating(dateRange);
         setAvgRating(formatData(JSON.parse(rating).rows));
         const lang = await retrieveAltLang(dateRange);
@@ -167,18 +169,8 @@ const Shows = () => {
             <Grid item xs={6}>
                 <Card sx={{ height: '100%' }}>
                     <CardHeader
-                        action={
-                            <FormControl sx={{ width: '100%' }}>
-                                <InputLabel>Button name</InputLabel>
-                                <Select label='Button name'>
-                                    {[].map((option) =>
-                                        <MenuItem>{option}</MenuItem>
-                                    )}
-                                </Select>
-                            </FormControl>
-                        }
-                        title="Average Lifespan by Year"
-                        subheader="An analysis of lifespan trends over time"
+                        title="Average Runtime by Year"
+                        subheader="An analysis of runtime trends over time"
                     />
                     <CardContent sx={{ 
                         paddingBottom: 0, paddingBottom: 0, paddingTop: 0,
@@ -234,7 +226,7 @@ const Shows = () => {
                                             </TableCell>
                                             <TableCell align="right">{show[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.primary.main}` }}>
-                                                {Math.round(show[2], 1)}
+                                                {Math.round(show[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -264,7 +256,7 @@ const Shows = () => {
                                             </TableCell>
                                             <TableCell align="right">{show[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
-                                                {Math.round(show[2], 1)}
+                                                {Math.round(show[2] * 100) / 100}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -295,7 +287,7 @@ const Shows = () => {
                                             </TableCell>
                                             <TableCell align="right">{show[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
-                                                {Math.round(show[2], 1)}
+                                                {Math.round(show[2] * 100) / 100}
                                             </TableCell>
                                             </TableRow>
                                         ))}
@@ -327,7 +319,7 @@ const Shows = () => {
                                             </TableCell>
                                             <TableCell align="right">{show[1]}</TableCell>
                                             <TableCell align="right" sx={{ color: `${theme.palette.accent1.main}` }}>
-                                                {Math.round(show[2], 1)}
+                                                {Math.round(show[2] * 100) / 100}
                                             </TableCell>
                                             </TableRow>
                                         ))}
