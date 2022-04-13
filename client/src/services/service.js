@@ -1,4 +1,5 @@
 export const makeGetRequest = async(url) => {
+    console.log(url);
     return await fetch(url)
       .then(response => response.json())
       .then(data => JSON.stringify(data));

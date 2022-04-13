@@ -57,23 +57,23 @@ const CastCrew = () => {
     const removeDuplicates = (list) => {
         let years = [];
         let unique = [];
-        list.forEach((el) => {
-            if (!years.includes(el[0])) {
-                years.push(el[0]);
-                unique.push(el);
-            }
-        })
-        console.log(unique);
+        if (list)
+            list.forEach((el) => {
+                if (!years.includes(el[0])) {
+                    years.push(el[0]);
+                    unique.push(el);
+                }
+            })
         return unique;
     }
 
     const [dateRange, setDateRange] = useState([subDays(new Date(), 3650), new Date()]);
-    const [actorSearch, setActorSearch] = useState("Tom Hanks");
-    const [sendSearch, setSendSearch] = useState("Tom Hanks");
-    const [actorSearch2, setActorSearch2] = useState("Tom Hanks");
-    const [sendSearch2, setSendSearch2] = useState("Tom Hanks");
-    const [directorSearch, setDirectorSearch] = useState("Steven Spielberg");
-    const [sendDirectorSearch, setSendDirectorSearch] = useState("Steven Spielberg");
+    const [actorSearch, setActorSearch] = useState("Dwayne Johnson");
+    const [sendSearch, setSendSearch] = useState("Dwayne Johnson");
+    const [actorSearch2, setActorSearch2] = useState("Dwayne Johnson");
+    const [sendSearch2, setSendSearch2] = useState("Dwayne Johnson");
+    const [directorSearch, setDirectorSearch] = useState("Quentin Tarantino");
+    const [sendDirectorSearch, setSendDirectorSearch] = useState("Quentin Tarantino");
     const [totalActors , setTotalActors] = useState();
     const [loading, setLoading] = useState(false);
     const [highestActor, setHighestActor] = useState([]);
@@ -134,6 +134,8 @@ const CastCrew = () => {
                 <DatePicker
                     views={['year']}
                     label="From"
+                    minDate={new Date('2001')}
+                    maxDate={new Date('2023')}
                     value={dateRange[0]}
                     onChange={(newValue) => changeDate(newValue, "from")}
                     renderInput={(params) => <TextField {...params} helperText={null} />}
@@ -141,6 +143,8 @@ const CastCrew = () => {
                 <DatePicker
                     views={['year']}
                     label="To"
+                    minDate={new Date('2001')}
+                    maxDate={new Date('2023')}
                     value={dateRange[1]}
                     onChange={(newValue) => changeDate(newValue, "to")}
                     renderInput={(params) => <TextField {...params} helperText={null} />}
@@ -197,7 +201,6 @@ const CastCrew = () => {
                         <Chart data={avgRating} sx={{ maxHeight: 130 }}>
                             <ArgumentScale factory={scaleBand} />
                             <ArgumentAxis />
-                            <ValueScale factory={scaleBand}/>
                             <ValueAxis showGrid={false}/>
                             <AreaSeries valueField="y" argumentField="x" />
                         </Chart>
@@ -229,7 +232,6 @@ const CastCrew = () => {
                             <Palette scheme={scheme} />
                             <ArgumentScale factory={scaleBand} />
                             <ArgumentAxis />
-                            <ValueScale factory={scaleBand}/>
                             <ValueAxis showGrid={false}/>
                             <BarSeries valueField="y1" argumentField="x" name="Comedy" />
                             <BarSeries valueField="y2" argumentField="x" name="Drama" />
@@ -265,7 +267,6 @@ const CastCrew = () => {
                             <Palette scheme={scheme} />
                             <ArgumentScale factory={scaleBand} />
                             <ArgumentAxis />
-                            <ValueScale factory={scaleBand}/>
                             <ValueAxis showGrid={false}/>
                             <BarSeries valueField="y1" argumentField="x" name="Comedy" />
                             <BarSeries valueField="y2" argumentField="x" name="Drama" />

@@ -7,11 +7,10 @@ import LocalMoviesOutlinedIcon from '@mui/icons-material/LocalMoviesOutlined';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import {retrieveAvgRuntime, retrieveHighestRatedMovies, retrieveShortestMovies, 
+import {retrieveAvgRuntime, retrieveHighestRatedMovies, retrieveShortestMovies, retrieveAvgRating,
     retrieveLongestMovies, retrieveLowestRatedMovies, retrieveTotalMovies, retrieveAltLang} from "../services/MovieService.js";
 import Loading from '../components/Loading.jsx';
 import { useTheme } from '@emotion/react';
-import { retrieveAvgRating } from '../services/ShowService.js';
 import { ArgumentAxis, ValueAxis, Chart, LineSeries, AreaSeries } from '@devexpress/dx-react-chart-material-ui';
 import {ValueScale, ArgumentScale} from '@devexpress/dx-react-chart';
 import { scaleBand } from '@devexpress/dx-chart-core';
@@ -38,7 +37,7 @@ const Movies = () => {
     function formatData(data) {
         let formatted = [];
         data.forEach(d => {
-            formatted.push({x: d[0], y: Math.round(d[1], 2)});
+            formatted.push({x: d[0], y: d[1]});
         });
         return formatted;
     }
@@ -46,13 +45,13 @@ const Movies = () => {
     const removeDuplicates = (list) => {
         let years = [];
         let unique = [];
-        list.forEach((el) => {
-            if (!years.includes(el[0])) {
-                years.push(el[0]);
-                unique.push(el);
-            }
-        })
-        console.log(unique);
+        if (list)
+            list.forEach((el) => {
+                if (!years.includes(el[0])) {
+                    years.push(el[0]);
+                    unique.push(el);
+                }
+            })
         return unique;
     }
 
@@ -65,17 +64,17 @@ const Movies = () => {
         //setLongestMovies(removeDuplicates(JSON.parse(longest).rows))
         //const shortest = await retrieveShortestMovies(dateRange);
         //setShortestMovies(removeDuplicates(JSON.parse(shortest).rows));
-        const best = await retrieveHighestRatedMovies(dateRange);
-        setBestMovies(removeDuplicates(JSON.parse(best).rows));
-        const worst = await retrieveLowestRatedMovies(dateRange);
-        setWorstMovies(removeDuplicates(JSON.parse(worst).rows));
+        // const best = await retrieveHighestRatedMovies(dateRange);
+        // setBestMovies(removeDuplicates(JSON.parse(best).rows));
+        // const worst = await retrieveLowestRatedMovies(dateRange);
+        // setWorstMovies(removeDuplicates(JSON.parse(worst).rows));
         const runtime = await retrieveAvgRuntime(dateRange);
-        setAvgRuntimes(JSON.parse(runtime).rows);
+        setAvgRuntimes(formatData(JSON.parse(runtime).rows));
         const rating = await retrieveAvgRating(dateRange);
         setAvgRating(formatData(JSON.parse(rating).rows));
+        console.log(avgRating)
         const lang = await retrieveAltLang(dateRange);
         setAltLang(formatData(JSON.parse(lang).rows));
-        console.log(lang);
         setLoading(false);
     }
 
@@ -98,6 +97,8 @@ const Movies = () => {
                 <DatePicker
                     views={['year']}
                     label="From"
+                    minDate={new Date('2001')}
+                    maxDate={new Date('2023')}
                     value={dateRange[0]}
                     onChange={(newValue) => changeDate(newValue, "from")}
                     renderInput={(params) => <TextField {...params} helperText={null} />}
@@ -106,6 +107,8 @@ const Movies = () => {
                     views={['year']}
                     label="To"
                     value={dateRange[1]}
+                    minDate={new Date('2001')}
+                    maxDate={new Date('2023')}
                     onChange={(newValue) => changeDate(newValue, "to")}
                     renderInput={(params) => <TextField {...params} helperText={null} />}
                 />
@@ -152,7 +155,6 @@ const Movies = () => {
                         <Chart data={altLang} sx={{ maxHeight: 130 }}>
                             <ArgumentScale factory={scaleBand} />
                             <ArgumentAxis />
-                            <ValueScale factory={scaleBand}/>
                             <ValueAxis showGrid={false}/>
                             <AreaSeries valueField="y" argumentField="x" />
                         </Chart>
@@ -162,23 +164,20 @@ const Movies = () => {
             <Grid item xs={6}>
                 <Card sx={{ height: '100%' }}>
                     <CardHeader
-                        action={
-                            <FormControl sx={{ width: '100%' }}>
-                                <InputLabel>Button name</InputLabel>
-                                <Select label='Button name'>
-                                    {[].map((option) =>
-                                        <MenuItem>{option}</MenuItem>
-                                    )}
-                                </Select>
-                            </FormControl>
-                        }
-                        title="Insert title here"
-                        subheader="Insert subtitle here"
+                        title="Average Runtime by Year"
+                        subheader="An anlysis of runtime trends over time"
                     />
-                    <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
+                    <CardContent sx={{ 
+                        paddingBottom: 0, paddingBottom: 0, paddingTop: 0,
+                        "&:last-child": {
+                        paddingBottom: 0
+                        }}}>
+                        <Chart data={avgRuntimes} sx={{ maxHeight: 350 }}>
+                            <ArgumentAxis />
+                            <ArgumentScale factory={scaleBand} />
+                            <ValueAxis />
+                            <LineSeries valueField="y" argumentField="x" />
+                        </Chart>
                     </CardContent>
                 </Card>
             </Grid>
@@ -188,12 +187,15 @@ const Movies = () => {
                         title="Average Rating by Year"
                         subheader="An analysis of rating trends over time (out of 10)"
                     />
-                    <CardContent>
-                        <Chart data={avgRating}>
+                    <CardContent sx={{ 
+                        paddingBottom: 0, paddingBottom: 0, paddingTop: 0,
+                        "&:last-child": {
+                        paddingBottom: 0
+                        }}}>
+                        <Chart data={avgRating} sx={{ maxHeight: 350 }}>
                             <ArgumentAxis />
                             <ArgumentScale factory={scaleBand} />
                             <ValueAxis />
-                            <ValueScale factory={scaleBand} />
                             <LineSeries valueField="y" argumentField="x" />
                         </Chart>
                     </CardContent>

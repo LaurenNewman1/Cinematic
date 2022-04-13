@@ -41,13 +41,13 @@ const Shows = () => {
     const removeDuplicates = (list) => {
         let years = [];
         let unique = [];
-        list.forEach((el) => {
-            if (!years.includes(el[0])) {
-                years.push(el[0]);
-                unique.push(el);
-            }
-        })
-        console.log(unique);
+        if (list)
+            list.forEach((el) => {
+                if (!years.includes(el[0])) {
+                    years.push(el[0]);
+                    unique.push(el);
+                }
+            })
         return unique;
     }
 
@@ -100,6 +100,8 @@ const Shows = () => {
                 <DatePicker
                     views={['year']}
                     label="From"
+                    minDate={new Date('2001')}
+                    maxDate={new Date('2023')}
                     value={dateRange[0]}
                     onChange={(newValue) => changeDate(newValue, "from")}
                     renderInput={(params) => <TextField {...params} helperText={null} />}
@@ -107,6 +109,8 @@ const Shows = () => {
                 <DatePicker
                     views={['year']}
                     label="To"
+                    minDate={new Date('2001')}
+                    maxDate={new Date('2023')}
                     value={dateRange[1]}
                     onChange={(newValue) => changeDate(newValue, "to")}
                     renderInput={(params) => <TextField {...params} helperText={null} />}
@@ -154,7 +158,6 @@ const Shows = () => {
                             <Palette scheme={scheme} />
                             <ArgumentScale factory={scaleBand} />
                             <ArgumentAxis />
-                            <ValueScale factory={scaleBand}/>
                             <ValueAxis showGrid={false} sx={{color: `${theme.palette.accent2.main}`}}/>
                             <AreaSeries valueField="y" argumentField="x" />
                         </Chart>
@@ -174,13 +177,20 @@ const Shows = () => {
                                 </Select>
                             </FormControl>
                         }
-                        title="Average Runtime by Year"
-                        subheader="An analysis of runtime trends over time"
+                        title="Average Lifespan by Year"
+                        subheader="An analysis of lifespan trends over time"
                     />
-                    <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Insert charts here
-                        </Typography>
+                    <CardContent sx={{ 
+                        paddingBottom: 0, paddingBottom: 0, paddingTop: 0,
+                        "&:last-child": {
+                        paddingBottom: 0
+                        }}}>
+                        <Chart data={avgRuntimes} sx={{ maxHeight: 350 }}>
+                            <ArgumentAxis />
+                            <ArgumentScale factory={scaleBand} />
+                            <ValueAxis />
+                            <LineSeries valueField="y" argumentField="x" />
+                        </Chart>
                     </CardContent>
                 </Card>
             </Grid>
@@ -190,12 +200,15 @@ const Shows = () => {
                         title="Average Rating by Year"
                         subheader="An analysis of rating trends over time (out of 10)"
                     />
-                    <CardContent>
-                        <Chart data={avgRating}>
+                    <CardContent sx={{ 
+                        paddingBottom: 0, paddingBottom: 0, paddingTop: 0,
+                        "&:last-child": {
+                        paddingBottom: 0
+                        }}}>
+                        <Chart data={avgRating} sx={{ maxHeight: 350 }}>
                             <ArgumentAxis />
                             <ArgumentScale factory={scaleBand} />
                             <ValueAxis />
-                            <ValueScale factory={scaleBand} />
                             <LineSeries valueField="y" argumentField="x" />
                         </Chart>
                     </CardContent>
