@@ -69,11 +69,10 @@ const Shows = () => {
         console.log(best)
         const worst = await retrieveLowestRatedShows(dateRange);
         setWorstShows(removeDuplicates(JSON.parse(worst).rows));
-        // TODO
-        //const longest = await retrieveLongestShows(dateRange);
-        //setLongestShows(removeDuplicates(JSON.parse(longest).rows));
-        //const shortest = await retrieveShortestShows(dateRange);
-        //setShortestShows(removeDuplicates(JSON.parse(shortest).rows));
+        const longest = await retrieveLongestShows(dateRange);
+        setLongestShows(removeDuplicates(JSON.parse(longest).rows));
+        const shortest = await retrieveShortestShows(dateRange);
+        setShortestShows(removeDuplicates(JSON.parse(shortest).rows));
         const runtime = await retrieveAvgRuntime(dateRange);
         setAvgRuntimes(formatData(JSON.parse(runtime).rows));
         const rating = await retrieveAvgRating(dateRange);

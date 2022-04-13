@@ -64,11 +64,10 @@ const Movies = () => {
         setLoading(true);
         const tot = await retrieveTotalMovies();
         setTotalMovies(tot.match('[0-9]+'));
-        // TODO
-        //const longest = await retrieveLongestMovies(dateRange);
-        //setLongestMovies(removeDuplicates(JSON.parse(longest).rows))
-        //const shortest = await retrieveShortestMovies(dateRange);
-        //setShortestMovies(removeDuplicates(JSON.parse(shortest).rows));
+        const longest = await retrieveLongestMovies(dateRange);
+        setLongestMovies(removeDuplicates(JSON.parse(longest).rows))
+        const shortest = await retrieveShortestMovies(dateRange);
+        setShortestMovies(removeDuplicates(JSON.parse(shortest).rows));
         const best = await retrieveHighestRatedMovies(dateRange);
         setBestMovies(removeDuplicates(JSON.parse(best).rows));
         const worst = await retrieveLowestRatedMovies(dateRange);

@@ -68,10 +68,10 @@ const Page = ({children}) => {
                         <CssBaseline />
                         <Drawer
                             sx={{
-                            width: 240,
+                            width: 200,
                             flexShrink: 0,
                             '& .MuiDrawer-paper': {
-                                width: 240,
+                                width: 200,
                                 backgroundColor: theme.palette.primary.main,
                                 color: 'white'
                             },
@@ -91,7 +91,7 @@ const Page = ({children}) => {
                             ))}
                             </List>
                         </Drawer>
-                        <Box component='main' sx={{ flexgrow: 1, bgcolor: 'background.default', width: '100%' }} >
+                        <Box component='main' sx={{ flexgrow: 1, bgcolor: 'background.default', width: '100%', margin: 0 }} >
                             {children}
                         </Box>
                     </Box>

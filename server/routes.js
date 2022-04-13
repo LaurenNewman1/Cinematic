@@ -43,16 +43,16 @@ module.exports = (app, db) => {
     app.get('/api/longest_movies/:start/:end', async(req, res) => {
         try {
             const data = await db.execute(
-                `SELECT t1.startyear, t1.Title, t1.Runtime
-                FROM "LAUREN.NEWMAN".title t1 INNER JOIN
-               ( SELECT startyear, MIN(Runtime) AS maxRuntime
-                FROM "LAUREN.NEWMAN".title GROUP BY startyear) t2
-                ON t1.startyear = t2.startyear
-                WHERE t1.Type = 'movie' and t1.Runtime != '\N'
-                AND t1.Runtime = t2.maxruntime
-                AND t1.StartYear BETWEEN ${req.params.start} AND ${req.params.end}
-                GROUP BY t1.StartYear, t1.Title, t1.Runtime
-                ORDER BY t1.startyear ASC`,
+                `SELECT StartYear, TitleName, Runtime
+                FROM "LAUREN.NEWMAN".Title
+                WHERE (StartYear, Runtime) IN (
+                    SELECT StartYear, MAX(Runtime) AS Runtime
+                    FROM "LAUREN.NEWMAN".Title
+                    WHERE Type = 'movie'
+                    AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                    GROUP BY StartYear
+                )
+                ORDER BY StartYear ASC`,
             );
             res.status(200).type('json').send(data);
         } catch (err) {
@@ -63,16 +63,16 @@ module.exports = (app, db) => {
     app.get('/api/shortest_movies/:start/:end', async(req, res) => {
         try {
             const data = await db.execute(
-                `SELECT t1.startyear, t1.Title, t1.Runtime
-                FROM "LAUREN.NEWMAN".title t1 INNER JOIN
-               ( SELECT startyear, MAX(Runtime) AS maxRuntime
-                FROM "LAUREN.NEWMAN".title GROUP BY startyear) t2
-                ON t1.startyear = t2.startyear
-                WHERE t1.Type = 'movie' and t1.Runtime != '\N'
-                AND t1.Runtime = t2.maxruntime
-                AND t1.StartYear BETWEEN ${req.params.start} AND ${req.params.end}
-                GROUP BY t1.StartYear, t1.Title, t1.Runtime
-                ORDER BY t1.startyear ASC`,
+                `SELECT StartYear, TitleName, Runtime
+                FROM "LAUREN.NEWMAN".Title
+                WHERE (StartYear, Runtime) IN (
+                    SELECT StartYear, MIN(Runtime) AS Runtime
+                    FROM "LAUREN.NEWMAN".Title
+                    WHERE Type = 'movie'
+                    AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                    GROUP BY StartYear
+                )
+                ORDER BY StartYear ASC`,
             );
             res.status(200).type('json').send(data);
         } catch (err) {
@@ -98,15 +98,16 @@ module.exports = (app, db) => {
     app.get('/api/longest_shows/:start/:end', async(req, res) => {
         try {
             const data = await db.execute(
-                `SELECT t1.startyear, t1.Title, t1.Runtime
-                FROM "LAUREN.NEWMAN".title t1 INNER JOIN
-               ( SELECT startyear, MIN(Runtime) AS maxRuntime
-                FROM "LAUREN.NEWMAN".title GROUP BY startyear) t2
-                ON t1.startyear = t2.startyear
-                WHERE t1.Type = 'tvSeries' 
-                AND t1.Runtime = t2.maxruntime
-                AND t1.StartYear BETWEEN ${req.params.start} AND ${req.params.end}
-                ORDER BY t1.startyear ASC`,
+                `SELECT StartYear, TitleName, Runtime
+                FROM "LAUREN.NEWMAN".Title
+                WHERE (StartYear, Runtime) IN (
+                    SELECT StartYear, MAX(Runtime) AS Runtime
+                    FROM "LAUREN.NEWMAN".Title
+                    WHERE Type = 'tvSeries'
+                    AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                    GROUP BY StartYear
+                )
+                ORDER BY StartYear ASC`,
             );
             res.status(200).type('json').send(data);
         } catch (err) {
@@ -117,15 +118,16 @@ module.exports = (app, db) => {
     app.get('/api/shortest_shows/:start/:end', async(req, res) => {
         try {
             const data = await db.execute(
-                `SELECT t1.startyear, t1.Title, t1.Runtime
-                FROM "LAUREN.NEWMAN".title t1 INNER JOIN
-               ( SELECT startyear, MAX(Runtime) AS maxRuntime
-                FROM "LAUREN.NEWMAN".title GROUP BY startyear) t2
-                ON t1.startyear = t2.startyear
-                WHERE t1.Type = 'tvSeries' 
-                AND t1.Runtime = t2.maxruntime
-                AND t1.StartYear BETWEEN ${req.params.start} AND ${req.params.end}
-                ORDER BY t1.startyear ASC`,
+                `SELECT StartYear, TitleName, Runtime
+                FROM "LAUREN.NEWMAN".Title
+                WHERE (StartYear, Runtime) IN (
+                    SELECT StartYear, MIN(Runtime) AS Runtime
+                    FROM "LAUREN.NEWMAN".Title
+                    WHERE Type = 'tvSeries'
+                    AND StartYear BETWEEN ${req.params.start} AND ${req.params.end}
+                    GROUP BY StartYear
+                )
+                ORDER BY StartYear ASC`,
               )
             ;
             res.status(200).type('json').send(data);
