@@ -40,10 +40,19 @@ const Movies = () => {
 
     function formatData(data) {
         let formatted = [];
-        if (data)
-            data.forEach(d => {
-                formatted.push({x: d[0], y: d[1]});
-            });
+        if (data) {
+            if (data.length > 11) {
+                data.forEach((d, i) => {
+                    if (i % 2 == 0)
+                        formatted.push({x: d[0], y: d[1]});
+                });
+            }
+            else {
+                data.forEach(d => {
+                    formatted.push({x: d[0], y: d[1]});
+                });
+            }
+        }
         return formatted;
     }
 
@@ -125,7 +134,7 @@ const Movies = () => {
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Card
-                        style={{backgroundColor: '#9f66e9', height: 100 }}>
+                        style={{backgroundColor: '#9f66e9', height: 120 }}>
                             <CardHeader
                                 title={totalMovies}
                                 subheader="Total movies"
@@ -134,7 +143,7 @@ const Movies = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <Card className='data_source'
-                        style={{backgroundColor: '#f4738a', height: 100}}>
+                        style={{backgroundColor: '#f4738a', height: 120}}>
                             <CardHeader
                                 title="IMDb"
                                 subheader="Primary data source" 
@@ -156,7 +165,7 @@ const Movies = () => {
                         paddingBottom: 0
                         }}}>
                         {altLang.length ?
-                        <Chart data={altLang} sx={{ maxHeight: 130 }}>
+                        <Chart data={altLang} sx={{ maxHeight: 170 }}>
                             <ArgumentScale factory={scale} />
                             <ArgumentAxis tickInterval={2}/>
                             <ValueAxis showGrid={false} />

@@ -22,10 +22,19 @@ const CastCrew = () => {
 
     function formatData(data) {
         let formatted = [];
-        if (data)
-            data.forEach(d => {
-                formatted.push({x: d[0], y: d[1]});
-            });
+        if (data) {
+            if (data.length > 11) {
+                data.forEach((d, i) => {
+                    if (i % 2 == 0)
+                        formatted.push({x: d[0], y: d[1]});
+                });
+            }
+            else {
+                data.forEach(d => {
+                    formatted.push({x: d[0], y: d[1]});
+                });
+            }
+        }
         return formatted;
     }
 
@@ -40,7 +49,7 @@ const CastCrew = () => {
 
     function formatBarChart(data1, data2, data3) {
         let formatted = [];
-        if (data1 && !data1.length && !data2.length && !data3.length)
+        if (!data1 || (!data1.length && !data2.length && !data3.length))
             return formatted;
         const start = dateRange[0].getYear() + 1900;
         const end = dateRange[1].getYear() + 1900;
@@ -48,12 +57,23 @@ const CastCrew = () => {
             const i1 = getCol(data1).indexOf(d);
             const i2 = getCol(data2).indexOf(d);
             const i3 = getCol(data3).indexOf(d);
-            formatted.push({
-                x: d, 
-                y1: i1 === -1 ? 0 : data1.at(i1)[1], 
-                y2: i2 === -1 ? 0 : data2.at(i2)[1], 
-                y3: i3 === -1 ? 0 : data3.at(i3)[1]
-            });
+            if (end - start > 10) {
+                if (d % 2 == 0)
+                    formatted.push({
+                        x: d, 
+                        y1: i1 === -1 ? 0 : data1.at(i1)[1], 
+                        y2: i2 === -1 ? 0 : data2.at(i2)[1], 
+                        y3: i3 === -1 ? 0 : data3.at(i3)[1]
+                    });
+            }
+            else {
+                formatted.push({
+                    x: d, 
+                    y1: i1 === -1 ? 0 : data1.at(i1)[1], 
+                    y2: i2 === -1 ? 0 : data2.at(i2)[1], 
+                    y3: i3 === -1 ? 0 : data3.at(i3)[1]
+                });
+            }
         }
         return formatted;
     }
@@ -190,7 +210,7 @@ const CastCrew = () => {
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                     <Card
-                        style={{backgroundColor: '#44c2b4', height: 100}}>
+                        style={{backgroundColor: '#44c2b4', height: 120}}>
                             <CardHeader
                                 title={totalActors}
                                 subheader="Total actors and directors"
@@ -199,7 +219,7 @@ const CastCrew = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <Card
-                        style={{backgroundColor: '#f4738a', height: 100}}>
+                        style={{backgroundColor: '#f4738a', height: 120}}>
                             <CardHeader
                                 title="IMDb"
                                 subheader="primary data source"
@@ -235,7 +255,7 @@ const CastCrew = () => {
                         paddingBottom: 0
                         }}}>
                         {avgRating.length ?
-                        <Chart data={avgRating} sx={{ maxHeight: 130 }}>
+                        <Chart data={avgRating} sx={{ maxHeight: 170 }}>
                             <ArgumentScale factory={scaleBand} />
                             <ArgumentAxis />
                             <ValueAxis showGrid={false}/>

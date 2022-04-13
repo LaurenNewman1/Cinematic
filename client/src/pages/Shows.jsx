@@ -53,10 +53,19 @@ const Shows = () => {
 
     function formatData(data) {
         let formatted = [];
-        if (data)
-            data.forEach(d => {
-                formatted.push({x: d[0], y: d[1]});
-            });
+        if (data) {
+            if (data.length > 11) {
+                data.forEach((d, i) => {
+                    if (i % 2 == 0)
+                        formatted.push({x: d[0], y: d[1]});
+                });
+            }
+            else {
+                data.forEach(d => {
+                    formatted.push({x: d[0], y: d[1]});
+                });
+            }
+        }
         return formatted;
     }
 
@@ -126,7 +135,7 @@ const Shows = () => {
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Card
-                         style={{backgroundColor: '#3283d2', height: 100}}>
+                         style={{backgroundColor: '#3283d2', height: 120}}>
                             <CardHeader
                                 title={totalShows}
                                 subheader="Total TV Shows"
@@ -135,7 +144,7 @@ const Shows = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <Card
-                        style={{backgroundColor: '#44c2b4', height: 100}}>
+                        style={{backgroundColor: '#44c2b4', height: 120}}>
                             <CardHeader
                                 title="IMDb"
                                 subheader="Primary data source"
@@ -156,7 +165,7 @@ const Shows = () => {
                         paddingBottom: 0
                         }}}>
                         {altLang.length ?
-                        <Chart data={altLang} sx={{ maxHeight: 130 }}>
+                        <Chart data={altLang} sx={{ maxHeight: 170 }}>
                             <Palette scheme={scheme} />
                             <ArgumentScale factory={scaleBand} />
                             <ArgumentAxis />
