@@ -110,8 +110,10 @@ const CastCrew = () => {
 
     const fetchData = async () => {
         setLoading(true);
-        const total = await retrieveTotalActors();
-        setTotalActors(total.match('[0-9]+').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        const tot = await retrieveTotalActors();
+        setTotalActors(tot.match('[0-9]+') 
+        ? tot.match('[0-9]+').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") 
+        : 0);
         const rating = await retrieveAvgRating(dateRange, actorSearch);
         setAvgRating(formatData(JSON.parse(rating).rows));
         const aGenres1 = await retrieveRoleGenreActor(dateRange, actorSearch2, "Comedy");

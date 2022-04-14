@@ -72,7 +72,9 @@ const Shows = () => {
     const fetchData = async () => {
         setLoading(true);
         const tot = await retrieveTotalShows();
-        setTotalShows(tot.match('[0-9]+').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        setTotalShows(tot.match('[0-9]+') 
+        ? tot.match('[0-9]+').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") 
+        : 0);
         const best = await retrieveHighestRatedShows(dateRange);
         setBestShows(removeDuplicates(JSON.parse(best).rows));
         console.log(best)

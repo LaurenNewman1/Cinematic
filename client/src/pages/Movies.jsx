@@ -72,7 +72,9 @@ const Movies = () => {
     const fetchData = async () => {
         setLoading(true);
         const tot = await retrieveTotalMovies();
-        setTotalMovies(tot.match('[0-9]+').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+        setTotalMovies(tot.match('[0-9]+') 
+            ? tot.match('[0-9]+').toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") 
+            : 0);
         const longest = await retrieveLongestMovies(dateRange);
         setLongestMovies(removeDuplicates(JSON.parse(longest).rows))
         const shortest = await retrieveShortestMovies(dateRange);
